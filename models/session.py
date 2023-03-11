@@ -57,6 +57,67 @@ class Session:
     session_length: SessionLength
 
     def update(self, packet: PacketSessionData):
-        if self.weather.value != packet.weather:
-            self.weather = Weather(packet.weather)
-            _logger.info(f'Weather changed, now is {self.weather.name}')
+        primitive_field_names = {
+            'track_temp': 'track_temperature',
+            'air_temp': 'air_temperature',
+            'total_laps': 'total_laps',
+            'track_length': 'track_length',
+            'session_time_left': 'session_time_left',
+            'session_duration': 'session_duration',
+            'pit_speed_limit': 'pit_speed_limit',
+            'spectator_car_index': 'spectator_car_index',
+            'amount_of_pertinent_weather_forecast': 'amount_of_pertinent_weather_forecast',
+            'ai_difficulty': 'ai_difficulty',
+            'season_identifier': 'season_identifier',
+            'weekend_identifier': 'weekend_identifier',
+            'session_identifier': 'session_identifier',
+            'pit_stop_window_start_lap': 'pit_stop_window_start_lap',
+            'pit_stop_window_end_lap': 'pit_stop_window_end_lap',
+            'time_of_day': 'time_of_day',
+        }
+        for field, packet_field in primitive_field_names.items():
+            packet_value = getattr(packet, packet_field)
+            if getattr(self, field) != packet_value:
+                setattr(self, field, packet_value)
+                _logger.info(f'{field} changed, now is "{getattr(self, field)}"')
+
+        enum_field_names = {
+            'weather': (Weather, 'weather'),
+            'session_type': (SessionType, 'session_type'),
+            'track': (Track, 'track_id'),
+            'formula_type': (FormulaType, 'formula'),
+            'safety_car_status': (SafetyCarStatus, 'safety_car_status'),
+            'gearbox': (Gearbox, 'gearbox_assist'),
+            'racing_line_mode': (RacingLineMode, 'dynamic_racing_line'),
+            'game_mode': (GameMode, 'game_mode'),
+            'rule_set': (RuleSet, 'rule_set'),
+            'session_length': (SessionLength, 'session_length'),
+        }
+        for field, (enum_class, packet_field) in enum_field_names.items():
+            packet_value = getattr(packet, packet_field)
+            if getattr(self, field).value != packet_value:
+                setattr(self, field, enum_class(packet_value))
+                _logger.info(f'{field} changed, now is "{getattr(self, field).name}"')
+
+        bool_field_names = {
+            'game_paused': 'game_paused',
+            'is_spectating': 'is_spectating',
+            'is_online': 'network_game',
+            'help_steering_enabled': 'steering_assist',
+            'help_braking_enabled': 'braking_assist',
+            'help_pit': 'pit_assist',
+            'help_pit_release': 'pit_release_assist',
+            'help_ers': 'ers_assist',
+            'help_drs': 'drs_assist',
+            'racing_line_is_3D': 'dynamic_racing_line_type'
+        }
+        for field, packet_field in bool_field_names.items():
+            packet_value = getattr(packet, packet_field) != 0
+            if getattr(self, field) != packet_value:
+                setattr(self, field, packet_value)
+                _logger.info(f'''{field} changed, now is "{'enabled' if getattr(self, field) else 'disabled'}"''')
+
+        if self.forecast_accuracy_is_perfect != (packet.forecast_accuracy == 0):
+            packet_value = packet.forecast_accuracy == 0
+            self.forecast_accuracy_is_perfect = packet_value
+            _logger.info(f'''Forecast accuracy has changed, now is "{'Perfect' if packet_value else 'Approximate'}"''')
