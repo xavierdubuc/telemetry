@@ -27,8 +27,10 @@ levels = {
     'error': logging.ERROR,
     'critical': logging.CRITICAL
 }
+log_level = levels[args.log_level]
+print(f'Using log level : "{log_level}"')
 logging.basicConfig(
-    level=levels[args.log_level],
+    level=log_level,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[logging.StreamHandler()]
 )
