@@ -51,7 +51,7 @@ class SessionHandler:
                 gearbox=Gearbox(packet.gearbox_assist),
                 help_pit=packet.pit_assist,
                 help_pit_release=packet.pit_release_assist,
-                help_ers=packet.ers.assist,
+                help_ers=packet.ers_assist,
                 help_drs=packet.drs_assist,
                 racing_line_mode=RacingLineMode(packet.dynamic_racing_line),
                 racing_line_is_3D=packet.dynamic_racing_line_type != 0,
