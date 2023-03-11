@@ -10,13 +10,14 @@ from models.racing_line_mode import RacingLineMode
 from models.game_mode import GameMode
 from models.rule_set import RuleSet
 from models.session_length import SessionLength
+from models.safety_car_status import SafetyCarStatus
 
 _logger = logging.getLogger(__name__)
 
 
 @dataclass
 class Session:
-    weather: Weather = None
+    weather: Weather
     track_temp: int
     air_temp: int
     total_laps: int
@@ -30,7 +31,7 @@ class Session:
     game_paused: bool
     is_spectating: bool
     spectator_car_index: int
-    # safety_car_status ?
+    safety_car_status: SafetyCarStatus
     is_online: bool
     amount_of_pertinent_weather_forecast: int
     weather_forecast: list

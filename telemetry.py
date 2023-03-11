@@ -8,7 +8,7 @@ from command import Command
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename='telemetry.log'
+    handlers=[logging.StreamHandler()]
 )
 
 HANDLERS = {

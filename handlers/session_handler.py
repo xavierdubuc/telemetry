@@ -10,6 +10,7 @@ from models.racing_line_mode import RacingLineMode
 from models.game_mode import GameMode
 from models.rule_set import RuleSet
 from models.session_length import SessionLength
+from models.safety_car_status import SafetyCarStatus
 
 _logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class SessionHandler:
                 game_paused=packet.game_paused != 0,
                 is_spectating=packet.is_spectating != 0,
                 spectator_car_index=packet.spectator_car_index,
-                # safety_car_status ?
+                safety_car_status=SafetyCarStatus(packet.safety_car_status),
                 is_online=packet.network_game != 0,
                 amount_of_pertinent_weather_forecast=packet.num_weather_forecast_samples,
                 weather_forecast=packet.weather_forecast_samples,
