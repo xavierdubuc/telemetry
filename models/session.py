@@ -1,3 +1,4 @@
+from datetime import timedelta
 import logging
 from dataclasses import dataclass
 from f1_22_telemetry.packets import PacketSessionData
@@ -60,7 +61,7 @@ class Session:
     def update(self, packet: PacketSessionData):
         self.session_time_left = packet.session_time_left
         self.session_duration = packet.session_duration
-        self.session_time_elapsed = self.session_duration - self.session_time_left
+        self.session_time_elapsed = timedelta(seconds=self.session_duration - self.session_time_left)
         primitive_field_names = {
             'track_temp': 'track_temperature',
             'air_temp': 'air_temperature',
