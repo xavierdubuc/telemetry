@@ -37,7 +37,7 @@ while True:
     _logger.debug(f'{packet_type} received...')
     handler = HANDLERS.get(packet_type)
     if handler:
-        _logger.debug('Handler found, handling the packet...')
+        _logger.info(f'Handling new {packet_type}')
         handler.handle(packet)
         _logger.debug('Packet has been handled')
     else:
