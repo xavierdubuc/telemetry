@@ -54,7 +54,7 @@ class Session:
     racing_line_is_3D: bool
     game_mode: GameMode
     rule_set: RuleSet
-    time_of_day: int  # minutes since midnight
+    time_of_day: int  # minutes since midnight FIXME better print
     session_length: SessionLength
     session_time_elapsed: int = 0
 

@@ -39,6 +39,7 @@ while True:
     if handler:
         _logger.debug(f'Handling new {packet_type}')
         handler.handle(packet)
+        _logger.debug(str(packet))
         _logger.debug('Packet has been handled')
     else:
         _logger.debug('No handler found for that packet, it has been ignored')
