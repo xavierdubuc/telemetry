@@ -5,12 +5,6 @@ import logging
 from handlers.session_handler import SessionHandler
 from command import Command
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[logging.StreamHandler()]
-)
-
 HANDLERS = {
     PacketCarDamageData: None,
     PacketCarTelemetryData: None,
@@ -25,8 +19,20 @@ HANDLERS = {
     PacketFinalClassificationData: None,
 }
 
-_logger = logging.getLogger(__name__)
 args = Command().parse_args()
+levels = {
+    'info': logging.INFO,
+    'debug': logging.DEBUG,
+    'warning': logging.WARNING,
+    'error': logging.ERROR,
+    'critical': logging.CRITICAL
+}
+logging.basicConfig(
+    level=levels[args.log_level],
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler()]
+)
+_logger = logging.getLogger(__name__)
 
 _logger.info(f'Starting listening on {args.ip}:20777')
 listener = TelemetryListener(host=args.ip)
