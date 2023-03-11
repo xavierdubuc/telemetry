@@ -28,7 +28,7 @@ class SessionHandler:
                 track_length=packet.track_length,
                 session_type=SessionType(packet.session_type),
                 track=Track(packet.track_id),
-                formula_type=FormulaType(packet.formula_type),
+                formula_type=FormulaType(packet.formula),
                 session_time_left=packet.session_time_left,
                 session_duration=packet.session_duration,
                 pit_speed_limit=packet.pit_speed_limit,
