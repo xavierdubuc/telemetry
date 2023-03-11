@@ -43,6 +43,7 @@ class Session:
     session_identifier: int
     pit_stop_window_start_lap: int
     pit_stop_window_end_lap: int
+    pit_stop_rejoin_position: int
     gearbox: Gearbox
     help_steering_enabled: bool
     help_braking_enabled: bool
@@ -76,6 +77,7 @@ class Session:
             'session_identifier': 'session_link_identifier',
             'pit_stop_window_start_lap': 'pit_stop_window_ideal_lap',
             'pit_stop_window_end_lap': 'pit_stop_window_latest_lap',
+            'pit_stop_rejoin_position': 'pit_stop_rejoin_position',
             'time_of_day': 'time_of_day',
         }
         for field, packet_field in primitive_field_names.items():
