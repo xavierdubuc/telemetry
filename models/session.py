@@ -25,8 +25,8 @@ class Session:
     session_type: SessionType
     track: Track
     formula_type: FormulaType
-    session_time_left: int
-    session_duration: int
+    session_time_left: int #seconds
+    session_duration: int #seconds
     pit_speed_limit: int
     game_paused: bool
     is_spectating: bool
@@ -55,15 +55,17 @@ class Session:
     rule_set: RuleSet
     time_of_day: int  # minutes since midnight
     session_length: SessionLength
+    session_time_elapsed: int = 0
 
     def update(self, packet: PacketSessionData):
+        self.session_time_left = packet.session_time_left
+        self.session_duration = packet.session_duration
+        self.session_time_elapsed = self.session_duration - self.session_time_left
         primitive_field_names = {
             'track_temp': 'track_temperature',
             'air_temp': 'air_temperature',
             'total_laps': 'total_laps',
             'track_length': 'track_length',
-            'session_time_left': 'session_time_left',
-            'session_duration': 'session_duration',
             'pit_speed_limit': 'pit_speed_limit',
             'spectator_car_index': 'spectator_car_index',
             'amount_of_pertinent_weather_forecast': 'num_weather_forecast_samples',
@@ -79,7 +81,7 @@ class Session:
             packet_value = getattr(packet, packet_field)
             if getattr(self, field) != packet_value:
                 setattr(self, field, packet_value)
-                _logger.info(f'{field} changed, now is "{getattr(self, field)}"')
+                self._log(f'{field} changed, now is "{getattr(self, field)}"')
 
         enum_field_names = {
             'weather': (Weather, 'weather'),
@@ -97,7 +99,7 @@ class Session:
             packet_value = getattr(packet, packet_field)
             if getattr(self, field).value != packet_value:
                 setattr(self, field, enum_class(packet_value))
-                _logger.info(f'{field} changed, now is "{getattr(self, field).name}"')
+                self._log(f'{field} changed, now is "{getattr(self, field).name}"')
 
         bool_field_names = {
             'game_paused': 'game_paused',
@@ -115,9 +117,12 @@ class Session:
             packet_value = getattr(packet, packet_field) != 0
             if getattr(self, field) != packet_value:
                 setattr(self, field, packet_value)
-                _logger.info(f'''{field} changed, now is "{'enabled' if getattr(self, field) else 'disabled'}"''')
+                self._log(f'''{field} changed, now is "{'enabled' if getattr(self, field) else 'disabled'}"''')
 
         if self.forecast_accuracy_is_perfect != (packet.forecast_accuracy == 0):
             packet_value = packet.forecast_accuracy == 0
             self.forecast_accuracy_is_perfect = packet_value
-            _logger.info(f'''Forecast accuracy has changed, now is "{'Perfect' if packet_value else 'Approximate'}"''')
+            self._log(f'''Forecast accuracy has changed, now is "{'Perfect' if packet_value else 'Approximate'}"''')
+
+    def _log(self, txt):
+        _logger.info(f'[{self.session_time_elapsed}] {txt}')
