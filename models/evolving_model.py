@@ -76,3 +76,6 @@ class EvolvingModel:
 
     def _log(self, txt: str):
         _logger.info(txt)
+
+    def _warn(self, txt: str):
+        _logger.warning(txt)

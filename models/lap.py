@@ -21,7 +21,6 @@ class Lap(EvolvingModel):
     safety_car_delta: float = None
     car_position: int = None
     current_lap_num: int = None
-    pit_status: PitStatus = None
     num_pit_stops: int = None
     sector: int = None
     current_lap_invalid: bool = None
@@ -32,6 +31,7 @@ class Lap(EvolvingModel):
     grid_position: int = None
     driver_status: DriverStatus = None
     result_status: ResultStatus = None
+    pit_status: PitStatus = None
     pit_lane_timer_active: bool = None
     pit_stop_timer_in_ms: int = None
     pit_lane_time_in_lane_in_ms: int = None
@@ -77,9 +77,31 @@ class Lap(EvolvingModel):
     def _log(self, txt):
         super(Lap, self)._log(f'[Driver #{self.index}] {txt}')
 
+    def _warn(self, txt):
+        super(Lap, self)._warn(f'[Driver #{self.index}] {txt}')
+
     def _primitive_value_changed(self, field, old_value, new_value):
-        if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms'):
+        if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms', 'pit_lane_timer_active', 'pit_stop_timer_active'):
             return
+        if field == 'pit_status':
+            if old_value == PitStatus.not_in_pit.name and new_value == PitStatus.pitting.name:
+                self._warn('Pitting !')
+            elif old_value == PitStatus.pitting.name and new_value == PitStatus.in_pit.name:
+                self._warn('In pit !')
+            elif old_value == PitStatus.in_pit.name and new_value == PitStatus.pitting.name:
+                self._warn('Exiting pit !')
+            elif old_value == PitStatus.pitting.name and new_value == PitStatus.not_in_pit.name:
+                self._warn('No more in pit !')
+        elif field == 'pit_stop_timer_in_ms':
+            if self.pit_stop_timer_in_ms:
+                return
+            self._warn(f'Time passed in pit : {new_value}')
+        elif field == 'pit_lane_time_in_lane_in_ms':
+            if self.pit_lane_timer_active:
+                return
+            self._warn(f'Time passed in pit lane : {new_value}')
+        elif field == 'safety_car_delta' and new_value < 0:
+            self._warn(f'Delta is negative ({new_value:.3f}s) !')
         super(Lap, self)._primitive_value_changed(field, old_value, new_value)
 
     @classmethod
