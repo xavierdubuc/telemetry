@@ -62,9 +62,9 @@ class Lap(EvolvingModel):
 
     def _get_enum_field_names(self):
         return {
-            'pit_status': 'pit_status',
-            'driver_status': 'driver_status',
-            'result_status': 'result_status',
+            'pit_status': (PitStatus, 'pit_status'),
+            'driver_status': (DriverStatus, 'driver_status'),
+            'result_status': (ResultStatus, 'result_status'),
         }
 
     def _get_bool_field_names(self):
