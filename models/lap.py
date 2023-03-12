@@ -94,8 +94,8 @@ class Lap(EvolvingModel):
             return super()._enum_value_changed(field, old_value, new_value)
 
     def _primitive_value_changed(self, field, old_value, new_value):
-        if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms',
-                     'pit_lane_time_in_lane_in_ms', 'pit_stop_timer_in_ms'):
+        if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms'):
+                    #  ):'pit_lane_time_in_lane_in_ms', 'pit_stop_timer_in_ms'):
             return
         elif field == 'sector':
             self._log(f'Entering sector #{new_value+1}')
