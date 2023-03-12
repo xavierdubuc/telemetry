@@ -12,6 +12,7 @@ from models.enums.ers_deploy_mode import ERSDeployMode
 
 _logger = logging.getLogger(__name__)
 
+ERS_CAPACITY_JOUL = 4000000
 
 @dataclass
 class CarStatus(EvolvingModel):
@@ -93,10 +94,11 @@ class CarStatus(EvolvingModel):
 
     def _enum_value_changed(self, field, old_value, new_value):
         if field == 'ers_deploy_mode':
+            ers_percent = int(100 * (ERS_CAPACITY_JOUL / self.ers_store_energy))
             if new_value == 'overtake':
-                self._warn(f'Enabling overtake mode ! Available amount : {self.ers_store_energy} J')
+                self._warn(f'Enabling overtake mode ! Available amount : {ers_percent}%')
             elif old_value == 'overtake':
-                self._warn(f'Disabling overtake mode ! Remaining amount : {self.ers_store_energy} J')
+                self._warn(f'Disabling overtake mode ! Remaining amount : {ers_percent}%')
             return
         if field == 'visual_tyre_compound':
             self._warn(f'Switching tyres from {old_value} to {new_value} !')
