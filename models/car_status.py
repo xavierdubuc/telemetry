@@ -78,7 +78,7 @@ class CarStatus(EvolvingModel):
         }
 
     def _primitive_value_changed(self, field, old_value, new_value):
-        if field not in (
+        if field in (
             'ers_harvested_this_lap_mguk', 'ers_harvested_this_lap_mguh',
             'ers_deployed_this_lap', 'ers_store_energy',
             'drs_activation_distance', 'fuel_in_tank', 'fuel_capacity',
