@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class Tyre(Enum):
+    none = 0
     soft = 16
     medium = 17
     hard = 18

@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class TyreCompound(Enum):
+    none = 0
     inter = 7
     wet = 8
     classic_dry = 9
