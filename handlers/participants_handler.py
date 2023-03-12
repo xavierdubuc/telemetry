@@ -28,5 +28,4 @@ class ParticipantsHandler:
                 else:
                     # a new participant joined ?
                     self.participants.append(Participant.create(participant_data))
-                print(self.participants[i])
 
