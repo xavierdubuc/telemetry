@@ -21,12 +21,12 @@ class ParticipantsHandler:
         else:
             # already have participant data
             for i in range(packet.num_active_cars):
-                _logger.info('New participant data created')
-                participant_data = packet.participants[i]
+                participant_data = packet.participants[i])
                 if i < len(self.participants):
                     # an existing one is updated
                     self.participants[i].update(participant_data)
                 else:
                     # a new participant joined ?
                     self.participants.append(Participant.create(participant_data))
+                print(self.participants[i])
 
