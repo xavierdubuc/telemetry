@@ -94,7 +94,7 @@ class CarStatus(EvolvingModel):
 
     def _enum_value_changed(self, field, old_value, new_value):
         if field == 'ers_deploy_mode':
-            ers_percent = int(100 * (self.ers_store_energy/ERS_CAPACITY_JOUL))
+            ers_percent = round(100 * (self.ers_store_energy/ERS_CAPACITY_JOUL))
             if new_value == 'overtake':
                 self._warn(f'Enabling overtake mode ! Available amount : {ers_percent}%')
             elif old_value == 'overtake':
