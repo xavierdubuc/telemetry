@@ -58,7 +58,7 @@ class Session(EvolvingModel):
     rule_set: RuleSet = None
     time_of_day: int = None
     session_length: SessionLength = None
-    session_time_elapsed: int = 0 = None
+    session_time_elapsed: int = 0
 
     @staticmethod
     def _get_primitive_field_names():
