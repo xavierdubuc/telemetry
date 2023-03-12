@@ -100,9 +100,12 @@ class Lap(EvolvingModel):
             if self.pit_lane_timer_active:
                 return
             self._warn(f'Time passed in pit lane : {new_value}')
-        elif field == 'safety_car_delta' and new_value < 0:
+        elif field == 'safety_car_delta':
+            if new_value >= 0:
+                return
             self._warn(f'Delta is negative ({new_value:.3f}s) !')
-        super(Lap, self)._primitive_value_changed(field, old_value, new_value)
+        else:
+            super(Lap, self)._primitive_value_changed(field, old_value, new_value)
 
     @classmethod
     def create(cls, packet: LapData, index):
