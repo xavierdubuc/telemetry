@@ -94,12 +94,13 @@ class CarStatus(EvolvingModel):
     def _enum_value_changed(self, field, old_value, new_value):
         if field == 'ers_deploy_mode':
             if new_value == 'overtake':
-                self._warn(f'Enabling overtake mode ! Available amount : {self.ers_store_energy}%')
+                self._warn(f'Enabling overtake mode ! Available amount : {self.ers_store_energy} J')
             elif old_value == 'overtake':
-                self._warn(f'Disabling overtake mode ! Remaining amount : {self.ers_store_energy}%')
+                self._warn(f'Disabling overtake mode ! Remaining amount : {self.ers_store_energy} J')
             return
-        if field == 'visual_type_compound':
+        if field == 'visual_tyre_compound':
             self._warn(f'Switching tyres from {old_value} to {new_value} !')
+            return
         super(CarStatus, self)._enum_value_changed(field, old_value, new_value)
 
     def _bool_value_changed(self, field, new_value):
