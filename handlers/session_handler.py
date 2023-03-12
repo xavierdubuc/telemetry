@@ -58,7 +58,8 @@ class SessionHandler:
                 game_mode=GameMode(packet.game_mode),
                 rule_set=RuleSet(packet.rule_set),
                 time_of_day=packet.time_of_day,
-                session_length=SessionLength(packet.session_length)
+                session_length=SessionLength(packet.session_length),
+                pit_stop_rejoin_position=packet.pit_stop_rejoin_position,
             )
         else:
             self.session.update(packet)
