@@ -19,46 +19,46 @@ _logger = logging.getLogger(__name__)
 
 @dataclass
 class Session(EvolvingModel):
-    weather: Weather
-    track_temp: int
-    air_temp: int
-    total_laps: int
-    track_length: int
-    session_type: SessionType
-    track: Track
-    formula_type: FormulaType
-    session_time_left: int  # seconds
-    session_duration: int  # seconds
-    pit_speed_limit: int
-    game_paused: bool
-    is_spectating: bool
-    spectator_car_index: int
-    safety_car_status: SafetyCarStatus
-    is_online: bool
-    amount_of_pertinent_weather_forecast: int
-    weather_forecast: list
-    forecast_accuracy_is_perfect: bool
-    ai_difficulty: int
-    season_identifier: int
-    weekend_identifier: int
-    session_identifier: int
-    pit_stop_window_start_lap: int
-    pit_stop_window_end_lap: int
-    pit_stop_rejoin_position: int
-    gearbox: Gearbox
-    help_steering_enabled: bool
-    help_braking_enabled: bool
-    help_pit: bool
-    help_pit_release: bool
-    help_ers: bool
-    help_drs: bool
-    racing_line_mode: RacingLineMode
-    racing_line_is_3D: bool
-    game_mode: GameMode
-    rule_set: RuleSet
-    time_of_day: int
-    session_length: SessionLength
-    session_time_elapsed: int = 0
+    weather: Weather = None
+    track_temp: int = None
+    air_temp: int = None
+    total_laps: int = None
+    track_length: int = None
+    session_type: SessionType = None
+    track: Track = None
+    formula_type: FormulaType = None
+    session_time_left: int = None # seconds
+    session_duration: int = None # seconds
+    pit_speed_limit: int = None
+    game_paused: bool = None
+    is_spectating: bool = None
+    spectator_car_index: int = None
+    safety_car_status: SafetyCarStatus = None
+    is_online: bool = None
+    amount_of_pertinent_weather_forecast: int = None
+    weather_forecast: list = None
+    forecast_accuracy_is_perfect: bool = None
+    ai_difficulty: int = None
+    season_identifier: int = None
+    weekend_identifier: int = None
+    session_identifier: int = None
+    pit_stop_window_start_lap: int = None
+    pit_stop_window_end_lap: int = None
+    pit_stop_rejoin_position: int = None
+    gearbox: Gearbox = None
+    help_steering_enabled: bool = None
+    help_braking_enabled: bool = None
+    help_pit: bool = None
+    help_pit_release: bool = None
+    help_ers: bool = None
+    help_drs: bool = None
+    racing_line_mode: RacingLineMode = None
+    racing_line_is_3D: bool = None
+    game_mode: GameMode = None
+    rule_set: RuleSet = None
+    time_of_day: int = None
+    session_length: SessionLength = None
+    session_time_elapsed: int = 0 = None
 
     @staticmethod
     def _get_primitive_field_names():

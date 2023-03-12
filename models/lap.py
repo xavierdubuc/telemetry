@@ -12,30 +12,30 @@ _logger = logging.getLogger(__name__)
 
 @dataclass
 class Lap(EvolvingModel):
-    last_lap_time_in_ms: int
-    current_lap_time_in_ms: int
-    sector1_time_in_ms: int
-    sector2_time_in_ms: int
-    lap_distance: float
-    total_distance: float
-    safety_car_delta: float
-    car_position: int
-    current_lap_num: int
-    pit_status: PitStatus
-    num_pit_stops: int
-    sector: int
-    current_lap_invalid: bool
-    penalties: int
-    warnings: int
-    num_unserved_drive_through_pens: int
-    num_unserved_stop_go_pens: int
-    grid_position: int
-    driver_status: DriverStatus
-    result_status: ResultStatus
-    pit_lane_timer_active: bool
-    pit_stop_timer_in_ms: int
-    pit_lane_time_in_lane_in_ms: int
-    pit_stop_should_serve_pen: int
+    last_lap_time_in_ms: int = None
+    current_lap_time_in_ms: int = None
+    sector1_time_in_ms: int = None
+    sector2_time_in_ms: int = None
+    lap_distance: float = None
+    total_distance: float = None
+    safety_car_delta: float = None
+    car_position: int = None
+    current_lap_num: int = None
+    pit_status: PitStatus = None
+    num_pit_stops: int = None
+    sector: int = None
+    current_lap_invalid: bool = None
+    penalties: int = None
+    warnings: int = None
+    num_unserved_drive_through_pens: int = None
+    num_unserved_stop_go_pens: int = None
+    grid_position: int = None
+    driver_status: DriverStatus = None
+    result_status: ResultStatus = None
+    pit_lane_timer_active: bool = None
+    pit_stop_timer_in_ms: int = None
+    pit_lane_time_in_lane_in_ms: int = None
+    pit_stop_should_serve_pen: int = None
 
     def _get_primitive_field_names(self):
         return {
