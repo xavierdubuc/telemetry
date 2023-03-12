@@ -97,17 +97,19 @@ class Lap(EvolvingModel):
         if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms'):
             return
         elif field == 'pit_lane_time_in_lane_in_ms' and new_value == 0:
-            self._warn(f'Time passed in pit lane : {timedelta(seconds=old_value/1000)}')
+            value = self._format_time(milliseconds=old_value)
+            self._warn(f'Time passed in pit lane : {value}')
         elif field == 'pit_stop_timer_in_ms' and new_value == 0:
-            self._warn(f'Time passed in pit : {timedelta(seconds=old_value/1000)}')
+            value = self._format_time(milliseconds=old_value)
+            self._warn(f'Time passed in pit: {value}')
         elif field == 'sector':
             self._log(f'Entering sector #{new_value+1}')
         elif field in ('sector1_time_in_ms', 'sector2_time_in_ms'):
-            value = new_value/1000
+            value = self._format_time(milliseconds=old_value)
             self._log(f'{field}: {value}s')
         elif field == 'last_lap_time_in_ms':
-            value = str(timedelta(seconds=new_value/1000))[2:][:-3]
-            self._log(f'{field}: {value}s')
+            value = self._format_time(milliseconds=new_value)
+            self._log(f'Last lap: {value}')
         elif field == 'safety_car_delta':
             if new_value >= 0:
                 return
