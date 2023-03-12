@@ -36,6 +36,7 @@ class Lap(EvolvingModel):
     pit_stop_timer_in_ms: int = None
     pit_lane_time_in_lane_in_ms: int = None
     pit_stop_should_serve_pen: int = None
+    index: int = None
 
     def _get_primitive_field_names(self):
         return {
@@ -72,3 +73,13 @@ class Lap(EvolvingModel):
             'current_lap_invalid': 'current_lap_invalid',
             'pit_lane_timer_active': 'pit_lane_timer_active',
         }
+
+    def _log(self, txt):
+        super(Lap, self)._log(f'[Driver #{self.index}] {txt}')
+
+
+    @classmethod
+    def create(cls, packet: LapData, index):
+        self = super().create(packet)
+        self.index = index
+        return self
