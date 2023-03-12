@@ -81,7 +81,7 @@ class Lap(EvolvingModel):
         super(Lap, self)._warn(f'[Driver #{self.index}] {txt}')
 
     def _primitive_value_changed(self, field, old_value, new_value):
-        if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms', 'pit_lane_timer_active', 'pit_stop_timer_active'):
+        if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms', 'pit_lane_timer_active'):
             return
         if field == 'pit_status':
             if old_value == PitStatus.not_in_pit.name and new_value == PitStatus.pitting.name:
@@ -101,7 +101,7 @@ class Lap(EvolvingModel):
             value = str(timedelta(seconds=new_value/1000))[2:][:-3]
             self._log(f'{field}: {value}s')
         elif field == 'pit_stop_timer_in_ms':
-            if self.pit_stop_timer_in_ms:
+            if self.pit_lane_timer_active:
                 return
             self._warn(f'Time passed in pit : {timedelta(seconds=new_value/1000)}')
         elif field == 'pit_lane_time_in_lane_in_ms':
