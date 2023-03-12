@@ -17,7 +17,7 @@ class ParticipantsHandler:
                 _logger.info('New participant data created')
                 participant_data = packet.participants[i]
                 print(f'{i}:{participant_data.name}')
-                # TODO can the index here be correlated with the index in LapData ?
+                # TODO participant index = lap index --> voir pour merger les objets ou les lier
                 self.participants.append(Participant.create(participant_data))
         else:
             # already have participant data
