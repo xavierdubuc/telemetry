@@ -92,14 +92,20 @@ class Lap(EvolvingModel):
                 self._warn('Exiting pit !')
             elif old_value == PitStatus.pitting.name and new_value == PitStatus.not_in_pit.name:
                 self._warn('No more in pit !')
+        elif field in ('sector1_time_in_ms', 'sector2_time_in_ms'):
+            value = new_value/1000
+            self._log(f'{field}: {value}s')
+        elif field in ('last_lap_time_in_ms', 'current_lap_time_in_ms'):
+            value = str(timedelta(seconds=new_value/1000))[2:][:-3]
+            self._log(f'{field}: {value}s')
         elif field == 'pit_stop_timer_in_ms':
             if self.pit_stop_timer_in_ms:
                 return
-            self._warn(f'Time passed in pit : {new_value}')
+            self._warn(f'Time passed in pit : {timedelta(seconds=new_value/1000)}')
         elif field == 'pit_lane_time_in_lane_in_ms':
             if self.pit_lane_timer_active:
                 return
-            self._warn(f'Time passed in pit lane : {new_value}')
+            self._warn(f'Time passed in pit lane : {timedelta(seconds=new_value/1000)}')
         elif field == 'safety_car_delta':
             if new_value >= 0:
                 return
