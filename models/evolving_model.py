@@ -8,14 +8,37 @@ _logger = logging.getLogger(__name__)
 
 @dataclass
 class EvolvingModel:
-    def _get_primitive_field_names(self):
+    @staticmethod
+    def _get_primitive_field_names():
         return {}
 
-    def _get_enum_field_names(self):
+    @staticmethod
+    def _get_enum_field_names():
         return {}
 
-    def _get_bool_field_names(self):
+    @staticmethod
+    def _get_bool_field_names():
         return {}
+
+    @classmethod
+    def create(cls, packet: Packet):
+        self = cls()
+        primitive_field_names = self._get_primitive_field_names()
+        for field, packet_field in primitive_field_names.items():
+            packet_value = getattr(packet, packet_field)
+            setattr(self, field, packet_value)
+
+        enum_field_names = self._get_enum_field_names()
+        for field, (enum_class, packet_field) in enum_field_names.items():
+            packet_value = getattr(packet, packet_field)
+            setattr(self, field, enum_class(packet_value))
+
+        bool_field_names = self._get_bool_field_names()
+        for field, packet_field in bool_field_names.items():
+            packet_value = getattr(packet, packet_field) != 0
+            setattr(self, field, packet_value)
+
+        return self
 
     def update(self, packet: Packet):
         primitive_field_names = self._get_primitive_field_names()

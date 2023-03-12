@@ -2,6 +2,7 @@ from f1_22_telemetry.listener import TelemetryListener
 from f1_22_telemetry.packets import *
 import logging
 
+from handlers.lap_handler import LapHandler
 from handlers.session_handler import SessionHandler
 from command import Command
 
@@ -10,7 +11,7 @@ HANDLERS = {
     PacketCarTelemetryData: None,
     PacketCarStatusData: None,
     PacketCarSetupData: None,
-    PacketLapData: None,
+    PacketLapData: LapHandler(),
     PacketSessionData: SessionHandler(),
     PacketSessionHistoryData: None,
     PacketMotionData: None,
@@ -28,7 +29,7 @@ levels = {
     'critical': logging.CRITICAL
 }
 log_level = levels[args.log_level]
-print(f'Using log level : "{log_level}"')
+print(f'Using log level : "{args.log_level}"')
 logging.basicConfig(
     level=log_level,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",

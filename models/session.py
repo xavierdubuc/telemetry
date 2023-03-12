@@ -56,11 +56,12 @@ class Session(EvolvingModel):
     racing_line_is_3D: bool
     game_mode: GameMode
     rule_set: RuleSet
-    time_of_day: int  # minutes since midnight FIXME better print
+    time_of_day: int
     session_length: SessionLength
     session_time_elapsed: int = 0
 
-    def _get_primitive_field_names(self):
+    @staticmethod
+    def _get_primitive_field_names():
         return {
             'track_temp': 'track_temperature',
             'air_temp': 'air_temperature',
@@ -78,7 +79,8 @@ class Session(EvolvingModel):
             'pit_stop_rejoin_position': 'pit_stop_rejoin_position',
         }
 
-    def _get_enum_field_names(self):
+    @staticmethod
+    def _get_enum_field_names():
         return {
             'weather': (Weather, 'weather'),
             'session_type': (SessionType, 'session_type'),
@@ -92,7 +94,8 @@ class Session(EvolvingModel):
             'session_length': (SessionLength, 'session_length'),
         }
 
-    def _get_bool_field_names(self):
+    @staticmethod
+    def _get_bool_field_names():
         return {
             'game_paused': 'game_paused',
             'is_spectating': 'is_spectating',
@@ -123,6 +126,20 @@ class Session(EvolvingModel):
             packet_value = packet.forecast_accuracy == 0
             self.forecast_accuracy_is_perfect = packet_value
             self._log(f'''Forecast accuracy has changed, now is "{'Perfect' if packet_value else 'Approximate'}"''')
+
+    @classmethod
+    def create(cls, packet: PacketSessionData):
+        self = super().update(packet)
+
+        self.session_time_left = packet.session_time_left
+        self.session_duration = packet.session_duration
+        self.session_time_elapsed = timedelta(seconds=self.session_duration - self.session_time_left)
+
+        # time of day
+        self.time_of_day = packet.time_of_day
+
+        # forecast accuracy is perfect
+        self.forecast_accuracy_is_perfect = packet.forecast_accuracy == 0
 
     def _log(self, txt):
         super(Session, self)._log(f'[{self.session_time_elapsed}] {txt}')
