@@ -77,6 +77,10 @@ class Lap(EvolvingModel):
     def _log(self, txt):
         super(Lap, self)._log(f'[Driver #{self.index}] {txt}')
 
+    def _primitive_value_changed(self, field, old_value, new_value):
+        if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms'):
+            return
+        super(Lap, self)._primitive_value_changed(field, old_value, new_value)
 
     @classmethod
     def create(cls, packet: LapData, index):

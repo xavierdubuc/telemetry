@@ -45,9 +45,10 @@ class EvolvingModel:
         for field, packet_field in primitive_field_names.items():
             curr_value = getattr(self, field)
             packet_value = getattr(packet, packet_field)
-            if getattr(self, field) != packet_value:
+            if curr_value != packet_value:
                 setattr(self, field, packet_value)
-                self._log(f'{field} changed, from {curr_value} to "{getattr(self, field)}"')
+                self._primitive_value_changed(field, curr_value, packet_value)
+                
 
         enum_field_names = self._get_enum_field_names()
         for field, (enum_class, packet_field) in enum_field_names.items():
@@ -55,14 +56,23 @@ class EvolvingModel:
             packet_value = getattr(packet, packet_field)
             if getattr(self, field).value != packet_value:
                 setattr(self, field, enum_class(packet_value))
-                self._log(f'{field} changed, from {curr_value} to "{getattr(self, field).name}"')
+                self._enum_value_changed(field, curr_value, getattr(self, field).name)
 
         bool_field_names = self._get_bool_field_names()
         for field, packet_field in bool_field_names.items():
             packet_value = getattr(packet, packet_field) != 0
             if getattr(self, field) != packet_value:
                 setattr(self, field, packet_value)
-                self._log(f'''{field} changed, now is "{'enabled' if getattr(self, field) else 'disabled'}"''')
+                self._bool_value_changed(field, getattr(self, field))
+
+    def _primitive_value_changed(self, field, old_value, new_value):
+        self._log(f'{field} changed, from {old_value} to "{new_value}"')
+
+    def _enum_value_changed(self, field, old_value, new_value):
+        self._log(f'{field} changed, from {old_value} to "{new_value}"')
+
+    def _bool_value_changed(self, field, new_value):
+        self._log(f'''{field} changed, now is "{'enabled' if new_value else 'disabled'}"''')
 
     def _log(self, txt: str):
         _logger.info(txt)

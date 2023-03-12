@@ -116,11 +116,6 @@ class Session(EvolvingModel):
 
         super(Session, self).update(packet)
 
-        # time of day
-        if self.time_of_day != packet.time_of_day:
-            self.time_of_day = packet.time_of_day
-            self._log(f'''Time of day is now {timedelta(minutes=self.time_of_day)}''')
-
         # forecast accuracy is perfect
         if self.forecast_accuracy_is_perfect != (packet.forecast_accuracy == 0):
             packet_value = packet.forecast_accuracy == 0
@@ -140,6 +135,12 @@ class Session(EvolvingModel):
 
         # forecast accuracy is perfect
         self.forecast_accuracy_is_perfect = packet.forecast_accuracy == 0
+
+    def _primitive_value_changed(self, field, old_value, new_value):
+        if field == 'time_of_day':
+            self._log(f'''Time of day is now {timedelta(minutes=self.time_of_day)}''')
+        else:
+            super(Session, self)._primitive_value_changed(field, old_value, new_value)
 
     def _log(self, txt):
         super(Session, self)._log(f'[{self.session_time_elapsed}] {txt}')
