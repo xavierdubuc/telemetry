@@ -21,7 +21,7 @@ class ParticipantsHandler:
         else:
             # already have participant data
             for i in range(packet.num_active_cars):
-                participant_data = packet.participants[i])
+                participant_data = packet.participants[i]
                 if i < len(self.participants):
                     # an existing one is updated
                     self.participants[i].update(participant_data)
