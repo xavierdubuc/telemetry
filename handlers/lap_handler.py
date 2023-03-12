@@ -31,7 +31,7 @@ class LapHandler:
                     _logger.info(f'Driver #{i} starts a new lap')
                     with open(f'./data/laps/{i}.log', 'w+') as lap_file:
                         lap_file.writelines([
-                            f'---- Lap # {len(car_laps)}',
+                            f'---- Lap # {len(car_laps)}\n',
                             str(car_last_lap),
                             "\n"
                         ])
