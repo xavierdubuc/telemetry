@@ -124,15 +124,9 @@ class Session(EvolvingModel):
 
     @classmethod
     def create(cls, packet: PacketSessionData):
-        self = super().update(packet)
+        self = super().create(packet)
 
-        self.session_time_left = packet.session_time_left
-        self.session_duration = packet.session_duration
         self.session_time_elapsed = timedelta(seconds=self.session_duration - self.session_time_left)
-
-        # time of day
-        self.time_of_day = packet.time_of_day
-
         # forecast accuracy is perfect
         self.forecast_accuracy_is_perfect = packet.forecast_accuracy == 0
 
