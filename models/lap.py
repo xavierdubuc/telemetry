@@ -96,10 +96,12 @@ class Lap(EvolvingModel):
     def _primitive_value_changed(self, field, old_value, new_value):
         if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms'):
             return
+        # -- this field should use old value as we log when it gets back to 0
         elif field == 'pit_lane_time_in_lane_in_ms':
             if new_value == 0:
                 value = self._format_time(milliseconds=old_value)
                 self._warn(f'Time passed in pit lane : {value}')
+        # -- this field should use old value as we log when it gets back to 0
         elif field == 'pit_stop_timer_in_ms':
             if new_value == 0:
                 value = self._format_time(milliseconds=old_value)
@@ -107,8 +109,8 @@ class Lap(EvolvingModel):
         elif field == 'sector':
             self._log(f'Entering sector #{new_value+1}')
         elif field in ('sector1_time_in_ms', 'sector2_time_in_ms'):
-            value = self._format_time(milliseconds=old_value)
-            self._log(f'{field}: {value}s')
+            value = self._format_time(milliseconds=new_value)
+            self._log(f'{field}: {value}')
         elif field == 'last_lap_time_in_ms':
             value = self._format_time(milliseconds=new_value)
             self._log(f'Last lap: {value}')
