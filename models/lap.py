@@ -92,6 +92,8 @@ class Lap(EvolvingModel):
                 self._warn('Exiting pit !')
             elif old_value == PitStatus.pitting.name and new_value == PitStatus.not_in_pit.name:
                 self._warn('No more in pit !')
+        elif field == 'sector':
+            self._log(f'Entering sector #{new_value+1}')
         elif field in ('sector1_time_in_ms', 'sector2_time_in_ms'):
             value = new_value/1000
             self._log(f'{field}: {value}s')
