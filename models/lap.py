@@ -94,7 +94,8 @@ class Lap(EvolvingModel):
             return super()._enum_value_changed(field, old_value, new_value)
 
     def _primitive_value_changed(self, field, old_value, new_value):
-        if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms', 'pit_lane_timer_active'):
+        if field in ('total_distance', 'lap_distance', 'current_lap_time_in_ms',
+                     'pit_lane_time_in_lane_in_ms', 'pit_stop_timer_in_ms'):
             return
         elif field == 'sector':
             self._log(f'Entering sector #{new_value+1}')
@@ -104,22 +105,22 @@ class Lap(EvolvingModel):
         elif field in ('last_lap_time_in_ms', 'current_lap_time_in_ms'):
             value = str(timedelta(seconds=new_value/1000))[2:][:-3]
             self._log(f'{field}: {value}s')
-        elif field == 'pit_stop_timer_in_ms':
-            if self.pit_lane_timer_active:
-                return
-            print(new_value)
-            self._warn(f'Time passed in pit : {timedelta(seconds=new_value/1000)}')
-        elif field == 'pit_lane_time_in_lane_in_ms':
-            if self.pit_lane_timer_active:
-                return
-            print(new_value)
-            self._warn(f'Time passed in pit lane : {timedelta(seconds=new_value/1000)}')
         elif field == 'safety_car_delta':
             if new_value >= 0:
                 return
             self._warn(f'Delta is negative ({new_value:.3f}s) !')
         else:
             super(Lap, self)._primitive_value_changed(field, old_value, new_value)
+
+    def _bool_value_changed(self, field, new_value):
+        if field == 'pit_lane_timer_active':
+            if not self.pit_lane_timer_active:
+                self._warn(f'Time passed in pit : {timedelta(seconds=self.pit_stop_timer_in_ms/1000)}')
+                self._warn(f'Time passed in pit lane : {timedelta(seconds=self.pit_lane_timer_in_ms/1000)}')
+            else:
+                return
+        else:
+            self._log(f'''{field} changed, now is "{'enabled' if new_value else 'disabled'}"''')
 
     @classmethod
     def create(cls, packet: LapData, index):
