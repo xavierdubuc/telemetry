@@ -116,7 +116,7 @@ class Lap(EvolvingModel):
         if field == 'pit_lane_timer_active':
             if not self.pit_lane_timer_active:
                 self._warn(f'Time passed in pit : {timedelta(seconds=self.pit_stop_timer_in_ms/1000)}')
-                self._warn(f'Time passed in pit lane : {timedelta(seconds=self.pit_lane_timer_in_ms/1000)}')
+                self._warn(f'Time passed in pit lane : {timedelta(seconds=self.pit_lane_time_in_lane_in_ms/1000)}')
             else:
                 return
         else:
