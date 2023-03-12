@@ -15,6 +15,7 @@ class ParticipantsHandler:
             # no participant data yet
             for i in range(packet.num_active_cars):
                 _logger.info('New participant data created')
+                print(f'{i}:{packet.name}')
                 participant_data = packet.participants[i]
                 # TODO can the index here be correlated with the index in LapData ?
                 self.participants.append(Participant.create(participant_data))
