@@ -23,7 +23,7 @@ class LobbyPlayer(EvolvingModel):
     @staticmethod
     def _get_primitive_field_names():
         return {
-            'car_number': 'race_number',
+            'car_number': 'car_number',
             'name': 'name',
         }
 
