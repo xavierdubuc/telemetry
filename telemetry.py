@@ -79,4 +79,4 @@ except:
     _logger.info('Stopping telemetry because of huge fail...')
     with open("session.json", "w") as out_file:
         json.dump(DB, out_file)
-    sys.exit(1)
+    raise
