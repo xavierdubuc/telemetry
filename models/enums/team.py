@@ -44,3 +44,4 @@ class Team(Enum):
     bwt_21=115
     trident_21=116
     mercedes_amg_gt_black_series=117
+    none=255
