@@ -8,19 +8,33 @@ from handlers.lap_handler import LapHandler
 from handlers.session_handler import SessionHandler
 from handlers.car_status_handler import CarStatusHandler
 from command import Command
+from telemetry.handlers.lobby_handler import LobbyHandler
 
+DB = {
+    'session': None,
+    'drivers': [
+        # with elements like 
+        # {
+        #   'participant' : Participant
+        #   'lobby_driver' : LobbyDriver
+        #   'laps': [] of Lap,
+        #   'car_status': CarStatus
+        # }
+    ]
+}
 HANDLERS = {
     PacketCarDamageData: None,
     PacketCarTelemetryData: None,
-    PacketCarStatusData: CarStatusHandler(),
+    PacketCarStatusData: CarStatusHandler(DB),
     PacketCarSetupData: None,
-    PacketLapData: LapHandler(),
-    PacketSessionData: SessionHandler(),
+    PacketLapData: LapHandler(DB),
+    PacketSessionData: SessionHandler(DB),
     PacketSessionHistoryData: None,
     PacketMotionData: None,
-    PacketParticipantsData: ParticipantsHandler(),
+    PacketParticipantsData: ParticipantsHandler(DB),
     PacketEventData: None,
     PacketFinalClassificationData: None,
+    PacketLobbyInfoData: LobbyHandler(DB),
 }
 
 args = Command().parse_args()
@@ -58,5 +72,11 @@ try:
             _logger.debug('No handler found for that packet, it has been ignored')
 except KeyboardInterrupt:
     _logger.info('Stopping telemetry...')
-    # TODO Write context in a file
+    with open("session.json", "w") as out_file:
+        json.dump(DB, out_file)
     sys.exit(130)
+except:
+    _logger.info('Stopping telemetry because of huge fail...')
+    with open("session.json", "w") as out_file:
+        json.dump(DB, out_file)
+    sys.exit(1)
