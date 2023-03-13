@@ -19,13 +19,13 @@ class ParticipantsHandler(AbstractHandler):
             # no participant data yet
             for i in range(packet.num_active_cars):
                 _logger.info('New participant data created')
-                participant_data = packet.drivers[i]
+                participant_data = packet.participants[i]
                 print(f'{i}:{participant_data.name}')
                 drivers.append({'participant': Participant.create(participant_data)})
         else:
             # already have participant data
             for i in range(packet.num_active_cars):
-                participant_data = packet.drivers[i]
+                participant_data = packet.participants[i]
                 if i < len(drivers):
                     participant = drivers[i].get('participant')
                     # an existing one is updated
