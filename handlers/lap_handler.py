@@ -24,9 +24,10 @@ class LapHandler(AbstractHandler):
         else:
             # already have lap data
             for i, lap_data in enumerate(packet.lap_data):
-                driver = drivers.get(i)
-                if not driver:
+                if i > len(drivers) -1:
                     drivers.append({'laps': [Lap.create(lap_data, index=i)]})
+                    return
+                driver = drivers[i]
                 car_laps = driver.get('laps')
                 if not car_laps:
                     driver['laps'] = [Lap.create(lap_data, index=i)]
