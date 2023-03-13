@@ -73,7 +73,7 @@ try:
 except KeyboardInterrupt:
     _logger.info('Stopping telemetry...')
     with open("session.json", "w") as out_file:
-        json.dump(DB, out_file)
+        out_file.write(DB)
     sys.exit(130)
 except:
     _logger.info('Stopping telemetry because of huge fail...')
