@@ -126,3 +126,4 @@ class OriginalDriver(Enum):
     calan_williams=135
     jack_doohan=136
     amaury_cordeel=137
+    none=255
