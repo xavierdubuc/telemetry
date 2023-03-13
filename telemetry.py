@@ -7,8 +7,8 @@ from handlers.participants_handler import ParticipantsHandler
 from handlers.lap_handler import LapHandler
 from handlers.session_handler import SessionHandler
 from handlers.car_status_handler import CarStatusHandler
+from handlers.lobby_handler import LobbyHandler
 from command import Command
-from telemetry.handlers.lobby_handler import LobbyHandler
 
 DB = {
     'session': None,
