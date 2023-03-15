@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class Nationality(Enum):
+    none = 0
     american = 1
     argentinean = 2
     australian = 3
