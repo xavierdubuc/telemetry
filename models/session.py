@@ -135,6 +135,7 @@ class Session(EvolvingModel):
 
         # forecast accuracy is perfect
         self.forecast_accuracy_is_perfect = packet.forecast_accuracy == 0
+        return self
 
     def _primitive_value_changed(self, field, old_value, new_value):
         if field == 'time_of_day':

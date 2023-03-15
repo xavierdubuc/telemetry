@@ -18,12 +18,12 @@ class CarStatusHandler(AbstractHandler):
                 drivers.append({'car_status': CarStatus.create(car_status_data)})
         else:
             for i, car_status_data in enumerate(packet.car_status_data):
-                car_status = drivers[i].get('car_status')
                 if i < len(drivers):
+                    car_status = drivers[i].get('car_status')
                     # an existing one is updated
                     if not car_status:
                         drivers[i]['car_status'] = CarStatus.create(car_status_data)
                     else:
                         drivers[i]['car_status'].update(car_status_data)
                 else:
-                    drivers[i].append({'car_status': CarStatus.create(car_status_data)})
+                    drivers.append({'car_status': CarStatus.create(car_status_data)})
