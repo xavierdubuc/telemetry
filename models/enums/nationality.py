@@ -7,7 +7,7 @@ class Nationality(Enum):
     argentinean = 2
     australian = 3
     austrian = 4
-    azerbaijani = 5
+    azerbaijan = 5
     bahraini = 6
     belgian = 7
     bolivian = 8
