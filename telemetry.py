@@ -1,4 +1,6 @@
 import sys
+import pickle
+from datetime import datetime
 from f1_22_telemetry.listener import TelemetryListener
 from f1_22_telemetry.packets import *
 import logging
@@ -74,11 +76,11 @@ try:
             _logger.debug('No handler found for that packet, it has been ignored')
 except KeyboardInterrupt:
     _logger.info('Stopping telemetry...')
-    with open("session.json", "w") as out_file:
-        out_file.write(str(DB))
+    with open(f"session{datetime.now().isoformat()}.pickle", "w") as out_file:
+        pickle.dump(DB, out_file)
     sys.exit(130)
 except:
     _logger.info('Stopping telemetry because of huge fail...')
-    with open("session.json", "w") as out_file:
-        out_file.write(str(DB))
+    with open(f"session{datetime.now().isoformat()}.pickle", "w") as out_file:
+        pickle.dump(DB, out_file)
     raise
