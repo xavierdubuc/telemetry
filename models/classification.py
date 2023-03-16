@@ -25,6 +25,7 @@ class Classification(EvolvingModel):
     tyre_stints_visual: List[Tyre] = field(default_factory=list)
     tyre_stints_end_laps: List[int] = field(default_factory=list)
 
+    @classmethod
     def create(cls, packet: PacketFinalClassificationData):
         self = super().create(packet)
         self.tyre_stints_actual = [TyreCompound(tyre) for tyre in packet.tyre_stints_actual]
