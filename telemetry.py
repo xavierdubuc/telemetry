@@ -3,6 +3,7 @@ from f1_22_telemetry.listener import TelemetryListener
 from f1_22_telemetry.packets import *
 import logging
 
+from handlers.final_classification_handler import FinalClassificationHandler
 from handlers.participants_handler import ParticipantsHandler
 from handlers.lap_handler import LapHandler
 from handlers.session_handler import SessionHandler
@@ -20,7 +21,8 @@ DB = {
         #   'laps': [] of Lap,
         #   'car_status': CarStatus
         # }
-    ]
+    ],
+    'classification': []
 }
 HANDLERS = {
     PacketCarDamageData: None,
@@ -33,7 +35,7 @@ HANDLERS = {
     PacketMotionData: None,
     PacketParticipantsData: ParticipantsHandler(DB),
     PacketEventData: None,
-    PacketFinalClassificationData: None,
+    PacketFinalClassificationData: FinalClassificationHandler(DB),
     PacketLobbyInfoData: LobbyHandler(DB),
 }
 
@@ -62,6 +64,8 @@ try:
         packet = listener.get()
         packet_type = type(packet)
         _logger.debug(f'{packet_type} received...')
+        if packet_type == PacketFinalClassificationData:
+            print('----------------FINAL CLASSIF RECEIVED -------------------- \n ------------------------------- \n ------------------')
         handler = HANDLERS.get(packet_type)
         if handler:
             _logger.debug(f'Handling new {packet_type}')
