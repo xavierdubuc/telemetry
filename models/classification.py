@@ -30,7 +30,7 @@ class Classification(EvolvingModel):
         self = super().create(packet)
         self.tyre_stints_actual = [TyreCompound(tyre) for tyre in packet.tyre_stints_actual]
         self.tyre_stints_visual = [Tyre(tyre) for tyre in packet.tyre_stints_visual]
-        self.tyre_stints_end_laps = packet.tyre_stints_end_laps
+        self.tyre_stints_end_laps = [int(lap) for lap in packet.tyre_stints_end_laps]
         return self
 
     @staticmethod
