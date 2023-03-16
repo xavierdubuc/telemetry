@@ -64,8 +64,6 @@ try:
         packet = listener.get()
         packet_type = type(packet)
         _logger.debug(f'{packet_type} received...')
-        if packet_type == PacketFinalClassificationData:
-            print('----------------FINAL CLASSIF RECEIVED -------------------- \n ------------------------------- \n ------------------')
         handler = HANDLERS.get(packet_type)
         if handler:
             _logger.debug(f'Handling new {packet_type}')

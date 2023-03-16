@@ -16,6 +16,9 @@ class FinalClassificationHandler(AbstractHandler):
         if not drivers:
             self.DB.setdefault('drivers', [])
             # no classification data yet
+            print(packet)
+            print(packet.num_cars)
+            print(packet.classification_data)
             for i in range(packet.num_cars):
                 _logger.info('New classification data created')
                 classification_data = packet.classification_data[i]
