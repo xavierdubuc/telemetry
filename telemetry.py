@@ -76,11 +76,11 @@ try:
             _logger.debug('No handler found for that packet, it has been ignored')
 except KeyboardInterrupt:
     _logger.info('Stopping telemetry...')
-    with open(f"session{datetime.now().isoformat()}.pickle", "w") as out_file:
+    with open(f"session{datetime.now().isoformat()}.pickle", "wb") as out_file:
         pickle.dump(DB, out_file)
     sys.exit(130)
 except:
     _logger.info('Stopping telemetry because of huge fail...')
-    with open(f"session{datetime.now().isoformat()}.pickle", "w") as out_file:
+    with open(f"session{datetime.now().isoformat()}.pickle", "wb") as out_file:
         pickle.dump(DB, out_file)
     raise
