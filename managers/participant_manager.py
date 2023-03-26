@@ -1,6 +1,6 @@
-from discord import Team
 from models.enums.nationality import Nationality
 from models.enums.original_driver import OriginalDriver
+from models.enums.team import Team
 from models.participant import Participant
 from managers.abstract_manager import AbstractManager
 
