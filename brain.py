@@ -67,7 +67,7 @@ class Brain:
                     self.current_session.participants.append(ParticipantManager.create(packet_data))
                 else:
                     changes = ParticipantManager.update(self.current_session.participants[i], packet_data)
-                    if 'network_id' or 'name' in changes:
+                    if 'network_id' in changes or 'name' in changes:
                         _logger.warning('!? A participant changed !?')
                         _logger.warning(changes)
         
