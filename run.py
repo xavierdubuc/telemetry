@@ -29,4 +29,4 @@ run_telemetry(args.ip, None)
 # thread_telemetry.start()
 
 # _logger.info('Starting bot...')
-# bot.run('MTA3NDM3NzU3NTgwNTIyNzE5OQ.GCPO8f.uDCvk2sRb5OWHQ7QaQoGHVaFLipUW2Mjrfif7k')
+# bot.run(token)
