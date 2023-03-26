@@ -1,15 +1,11 @@
-import logging
 from dataclasses import dataclass
-from models.evolving_model import EvolvingModel
 from models.enums.team import Team
 from models.enums.original_driver import OriginalDriver
 from models.enums.nationality import Nationality
 
-_logger = logging.getLogger(__name__)
-
 
 @dataclass
-class Participant(EvolvingModel):
+class Participant:
     network_id: int = None
     race_number: int = None
     name: int = None
@@ -21,28 +17,27 @@ class Participant(EvolvingModel):
     telemetry_is_public: bool = None
 
     def __str__(self):
-        return f'"{self.name}" (#{self.race_number}), {self.nationality.name}, driving the {self.team.name} car of {self.original_driver.name}'
+        return f'"{self.name}" #{self.race_number} {self.nationality.name} {self.team.name}'
 
-    @staticmethod
-    def _get_primitive_field_names():
-        return {
-            'network_id': 'network_id',
-            'race_number': 'race_number',
-            'name': 'name',
-        }
-
-    @staticmethod
-    def _get_enum_field_names():
-        return {
-            'original_driver': (OriginalDriver, 'driver_id'),
-            'team': (Team,'team_id'),
-            'nationality': (Nationality,'nationality'),
-        }
-
-    @staticmethod
-    def _get_bool_field_names():
-        return {
-            'is_my_team_mode': 'my_team',
-            'ai_controlled': 'ai_controlled',
-            'telemetry_is_public': 'your_telemetry',
-        }
+    def __eq__(self, other):
+        if type(self) != type(other):
+            return False
+        if self.network_id != other.network_id:
+            return False
+        if self.race_number != other.race_number:
+            return False
+        if self.name != other.name:
+            return False
+        if self.original_driver != other.original_driver:
+            return False
+        if self.team != other.team:
+            return False
+        if self.nationality != other.nationality:
+            return False
+        if self.is_my_team_mode != other.is_my_team_mode:
+            return False
+        if self.ai_controlled != other.ai_controlled:
+            return False
+        if self.telemetry_is_public != other.telemetry_is_public:
+            return False
+        return True

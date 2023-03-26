@@ -1,7 +1,4 @@
-from datetime import timedelta
-import logging
 from dataclasses import dataclass
-from f1_22_telemetry.packets import PacketSessionData
 from models.enums.session_type import SessionType
 from models.enums.weather import Weather
 from models.enums.track import Track
@@ -12,23 +9,25 @@ from models.enums.game_mode import GameMode
 from models.enums.rule_set import RuleSet
 from models.enums.session_length import SessionLength
 from models.enums.safety_car_status import SafetyCarStatus
-from models.evolving_model import EvolvingModel
-
-_logger = logging.getLogger(__name__)
 
 
 @dataclass
-class Session(EvolvingModel):
+class Session:
+    # Identifier fields
+    session_type: SessionType = None
+    formula_type: FormulaType = None
+    track: Track = None
+    game_mode: GameMode = None
+    session_length: SessionLength = None
+    session_duration: int = None  # seconds
     weather: Weather = None
+
+    # Other packet fields
     track_temp: int = None
     air_temp: int = None
     total_laps: int = None
     track_length: int = None
-    session_type: SessionType = None
-    track: Track = None
-    formula_type: FormulaType = None
-    session_time_left: int = None # seconds
-    session_duration: int = None # seconds
+    session_time_left: int = None  # seconds
     pit_speed_limit: int = None
     game_paused: bool = None
     is_spectating: bool = None
@@ -54,94 +53,22 @@ class Session(EvolvingModel):
     help_drs: bool = None
     racing_line_mode: RacingLineMode = None
     racing_line_is_3D: bool = None
-    game_mode: GameMode = None
     rule_set: RuleSet = None
     time_of_day: int = None
-    session_length: SessionLength = None
     session_time_elapsed: int = 0
 
-    @staticmethod
-    def _get_primitive_field_names():
-        return {
-            'track_temp': 'track_temperature',
-            'air_temp': 'air_temperature',
-            'total_laps': 'total_laps',
-            'track_length': 'track_length',
-            'pit_speed_limit': 'pit_speed_limit',
-            'spectator_car_index': 'spectator_car_index',
-            'amount_of_pertinent_weather_forecast': 'num_weather_forecast_samples',
-            'ai_difficulty': 'ai_difficulty',
-            'season_identifier': 'season_link_identifier',
-            'weekend_identifier': 'weekend_link_identifier',
-            'session_identifier': 'session_link_identifier',
-            'pit_stop_window_start_lap': 'pit_stop_window_ideal_lap',
-            'pit_stop_window_end_lap': 'pit_stop_window_latest_lap',
-            'pit_stop_rejoin_position': 'pit_stop_rejoin_position',
-        }
+    # data not from packets
+    participants: list = None
 
-    @staticmethod
-    def _get_enum_field_names():
-        return {
-            'weather': (Weather, 'weather'),
-            'session_type': (SessionType, 'session_type'),
-            'track': (Track, 'track_id'),
-            'formula_type': (FormulaType, 'formula'),
-            'safety_car_status': (SafetyCarStatus, 'safety_car_status'),
-            'gearbox': (Gearbox, 'gearbox_assist'),
-            'racing_line_mode': (RacingLineMode, 'dynamic_racing_line'),
-            'game_mode': (GameMode, 'game_mode'),
-            'rule_set': (RuleSet, 'rule_set'),
-            'session_length': (SessionLength, 'session_length'),
-        }
-
-    @staticmethod
-    def _get_bool_field_names():
-        return {
-            'game_paused': 'game_paused',
-            'is_spectating': 'is_spectating',
-            'is_online': 'network_game',
-            'help_steering_enabled': 'steering_assist',
-            'help_braking_enabled': 'braking_assist',
-            'help_pit': 'pit_assist',
-            'help_pit_release': 'pit_release_assist',
-            'help_ers': 'ers_assist',
-            'help_drs': 'drs_assist',
-            'racing_line_is_3D': 'dynamic_racing_line_type'
-        }
-
-    def update(self, packet: PacketSessionData):
-        self.session_time_left = packet.session_time_left
-        self.session_duration = packet.session_duration
-        self.session_time_elapsed = timedelta(seconds=self.session_duration - self.session_time_left)
-
-        super(Session, self).update(packet)
-
-        # forecast accuracy is perfect
-        if self.forecast_accuracy_is_perfect != (packet.forecast_accuracy == 0):
-            packet_value = packet.forecast_accuracy == 0
-            self.forecast_accuracy_is_perfect = packet_value
-            self._log(f'''Forecast accuracy has changed, now is "{'Perfect' if packet_value else 'Approximate'}"''')
-
-    @classmethod
-    def create(cls, packet: PacketSessionData):
-        self = super().create(packet)
-
-        self.session_time_left = packet.session_time_left
-        self.session_duration = packet.session_duration
-        self.session_time_elapsed = timedelta(seconds=self.session_duration - self.session_time_left)
-
-        # time of day
-        self.time_of_day = packet.time_of_day
-
-        # forecast accuracy is perfect
-        self.forecast_accuracy_is_perfect = packet.forecast_accuracy == 0
-        return self
-
-    def _primitive_value_changed(self, field, old_value, new_value):
-        if field == 'time_of_day':
-            self._log(f'''Time of day is now {timedelta(minutes=self.time_of_day)}''')
-        else:
-            super(Session, self)._primitive_value_changed(field, old_value, new_value)
-
-    def _log(self, txt):
-        super(Session, self)._log(f'[{self.session_time_elapsed}] {txt}')
+    def __eq__(self, other):
+        if type(self) != type(other):
+            return False
+        if self.session_type != other.session_type:
+            return False
+        if self.track != other.track:
+            return False
+        if self.game_mode != other.game_mode:
+            return False
+        if self.session_length != other.session_length:
+            return False
+        return True

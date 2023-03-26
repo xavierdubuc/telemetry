@@ -12,6 +12,7 @@ class Team(Enum):
     haas=7
     mclaren=8
     alfa_romeo=9
+    my_team=41
     mercedes_2020=85
     ferrari_2020=86
     red_bull_2020=87
