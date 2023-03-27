@@ -15,6 +15,7 @@ def run_telemetry(ip:str, bot:commands.InteractionBot):
     brain = Brain()
     _logger.info(f'Starting listening on {ip}:20777')
     listener = TelemetryListener(host=ip)
+    i = 0
     try:
         while True:
             _logger.debug('Waiting for packets...')
@@ -22,6 +23,10 @@ def run_telemetry(ip:str, bot:commands.InteractionBot):
             packet_type = type(packet)
             _logger.debug(f'{packet_type} received...')
             brain.handle_received_packet(packet)
+            if brain.current_session and brain.current_session.participants:
+                for participant in brain.current_session.participants:
+                    print(participant.race_number, participant.name, participant.telemetry_is_public)
+            i += 1
     except KeyboardInterrupt:
         _logger.info('Stopping telemetry...')
         with open(f"session{datetime.now().isoformat()}.pickle", "wb") as out_file:

@@ -39,6 +39,7 @@ class Brain:
     def _handle_received_session_packet(self, packet: PacketSessionData):
         tmp_session = SessionManager.create(packet)
         if not self.current_session:
+            _logger.info('A new session has started')
             self.current_session = tmp_session
             return
 
@@ -48,6 +49,7 @@ class Brain:
                 print('Forecast has changed !')
                 print(self.current_session.weather_forecast)
         else:
+            _logger.info('A new session has started, previous one has been backuped')
             self.previous_sessions.append(self.current_session)
             self.current_session = tmp_session
 
