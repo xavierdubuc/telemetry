@@ -9,7 +9,7 @@ from f1_22_telemetry.packets import PacketFinalClassificationData
 
 
 @dataclass
-class Classification(EvolvingModel):
+class Classification:
     position: int = None
     grid_position: int = None
     num_laps: int = None
@@ -24,36 +24,3 @@ class Classification(EvolvingModel):
     tyre_stints_actual: List[TyreCompound] = field(default_factory=list)
     tyre_stints_visual: List[Tyre] = field(default_factory=list)
     tyre_stints_end_laps: List[int] = field(default_factory=list)
-
-    @classmethod
-    def create(cls, packet: PacketFinalClassificationData):
-        self = super().create(packet)
-        self.tyre_stints_actual = [TyreCompound(tyre) for tyre in packet.tyre_stints_actual]
-        self.tyre_stints_visual = [Tyre(tyre) for tyre in packet.tyre_stints_visual]
-        self.tyre_stints_end_laps = [int(lap) for lap in packet.tyre_stints_end_laps]
-        return self
-
-    @staticmethod
-    def _get_primitive_field_names():
-        return {
-            'position': 'position',
-            'grid_position': 'grid_position',
-            'num_laps': 'num_laps',
-            'points': 'points',
-            'num_pit_stops': 'num_pit_stops',
-            'total_race_time': 'total_race_time',
-            'penalties_time': 'penalties_time',
-            'num_penalties': 'num_penalties',
-            'num_tyre_stints': 'num_tyre_stints',
-            'best_lap_time_in_ms': 'best_lap_time_in_ms',
-        }
-
-    @staticmethod
-    def _get_enum_field_names():
-        return {
-            'result_status': (ResultStatus, 'result_status'),
-        }
-
-    @staticmethod
-    def _get_bool_field_names():
-        return {}

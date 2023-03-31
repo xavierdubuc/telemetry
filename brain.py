@@ -14,6 +14,7 @@ from f1_22_telemetry.packets import (
     PacketFinalClassificationData,
     PacketLobbyInfoData
 )
+from managers.classification_manager import ClassificationManager
 from managers.participant_manager import ParticipantManager
 
 from managers.session_manager import SessionManager
@@ -33,8 +34,11 @@ class Brain:
         if packet_type == PacketSessionData:
             self._handle_received_session_packet(packet)
 
-        if packet_type == PacketParticipantsData:
+        elif packet_type == PacketParticipantsData:
             self._handle_received_participants_packet(packet)
+
+        elif packet_type == PacketFinalClassificationData:
+            self._handle_received_final_classification_packet(packet)
 
     def _handle_received_session_packet(self, packet: PacketSessionData):
         tmp_session = SessionManager.create(packet)
@@ -72,4 +76,24 @@ class Brain:
                     if 'network_id' in changes or 'name' in changes:
                         _logger.warning('!? A participant changed !?')
                         _logger.warning(changes)
-        
+
+    def _handle_received_final_classification_packet(self, packet:PacketFinalClassificationData):
+        if not self.current_session:
+            return # this should not happen
+        if not self.current_session.final_classification:
+            self.current_session.final_classification = [
+                ClassificationManager.create(packet.classification_data[i])
+                for i in range(packet.num_cars)
+            ]
+        else:
+            current_amount_of_classification = len(self.current_session.final_classification)
+            for i in range(packet.num_cars):
+                packet_data = packet.classification_data[i]
+                if i > current_amount_of_classification - 1:
+                    self.current_session.final_classification.append(ClassificationManager.create(packet_data))
+                else:
+                    changes = ClassificationManager.update(self.current_session.final_classification[i], packet_data)
+                    if changes:
+                        _logger.warning('!? final classification changed !?')
+                        _logger.warning(changes)
+

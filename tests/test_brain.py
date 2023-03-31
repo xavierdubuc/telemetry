@@ -1,19 +1,26 @@
+import ctypes
 import unittest
 from unittest.mock import Mock, call, patch
 from f1_22_telemetry.packets import (
     PacketSessionData,
     PacketParticipantsData,
-    ParticipantData
+    ParticipantData,
+    FinalClassificationData,
+    PacketFinalClassificationData
 )
 
 from brain import Brain
+from models.classification import Classification
 from models.enums.nationality import Nationality
 from models.enums.team import Team
 from models.enums.track import Track
+from models.enums.tyre import Tyre
+from models.enums.tyre_compound import TyreCompound
 from models.participant import Participant
 from models.session import Session
 
 class BrainTest(unittest.TestCase):
+    maxDiff = None
     def setUp(self):
         self.brain = Brain()
 
@@ -123,3 +130,67 @@ class BrainTest(unittest.TestCase):
         self.assertEqual(str(patched_update.call_args_list[1][0][1]), str(new_packet.participants[1]))
         patched_create.assert_called_once()
         self.assertEqual(str(patched_create.call_args[0][0]), str(new_packet.participants[2]))
+
+    @patch('managers.classification_manager.ClassificationManager.update')
+    @patch('managers.classification_manager.ClassificationManager.create')
+    def test__handle_received_classification_packet(self, patched_create, patched_update):
+        xion = Classification(position=1)
+        prolactron = Classification(position=2)
+        cid = Classification(position=3)
+        classification_data = [
+            FinalClassificationData(
+                position=1, num_laps=12, grid_position=2, points=25,
+                num_pit_stops=1, result_status=3, best_lap_time_in_ms=1000, total_race_time=12000,
+                penalties_time=0, num_penalties=0, num_tyre_stints=2,
+                tyre_stints_actual=(ctypes.c_uint8*8)(TyreCompound.c1.value,TyreCompound.c2.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_visual=(ctypes.c_uint8*8)(Tyre.soft.value,Tyre.medium.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_end_laps=(ctypes.c_uint8*8)(1,255,0,0,0,0,0,0)
+            ),
+            FinalClassificationData(
+                position=2, num_laps=12, grid_position=3, points=18,
+                num_pit_stops=1, result_status=3, best_lap_time_in_ms=2000, total_race_time=14000,
+                penalties_time=0, num_penalties=0, num_tyre_stints=2,
+                tyre_stints_actual=(ctypes.c_uint8*8)(TyreCompound.c1.value,TyreCompound.c2.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_visual=(ctypes.c_uint8*8)(Tyre.soft.value,Tyre.medium.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_end_laps=(ctypes.c_uint8*8)(1,255,0,0,0,0,0,0)
+            ),
+        ]
+        packet = PacketFinalClassificationData(num_cars=2, classification_data=(FinalClassificationData * 22)(*classification_data))
+
+        self.brain._handle_received_final_classification_packet(packet)
+        patched_create.assert_not_called()
+        patched_update.assert_not_called()
+
+        patched_create.side_effect = [xion, prolactron, cid]
+        self.brain.current_session = Session()
+
+        self.brain._handle_received_final_classification_packet(packet)
+        self.assertEqual(patched_create.call_count, 2)
+        self.assertEqual(str(patched_create.call_args_list[0][0][0]), str(packet.classification_data[0]))
+        self.assertEqual(str(patched_create.call_args_list[1][0][0]), str(packet.classification_data[1]))
+        patched_update.assert_not_called()
+        self.assertListEqual(self.brain.current_session.final_classification, [xion, prolactron])
+
+        patched_create.reset_mock()
+        patched_update.reset_mock()
+        classification_data[1].position = 3
+        classification_data.append(
+            FinalClassificationData(
+                position=2, num_laps=12, grid_position=12, points=18,
+                num_pit_stops=1, result_status=3, best_lap_time_in_ms=2000, total_race_time=14000,
+                penalties_time=0, num_penalties=0, num_tyre_stints=2,
+                tyre_stints_actual=(ctypes.c_uint8*8)(TyreCompound.c1.value,TyreCompound.c2.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_visual=(ctypes.c_uint8*8)(Tyre.soft.value,Tyre.medium.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_end_laps=(ctypes.c_uint8*8)(1,255,0,0,0,0,0,0)
+            ),
+        )
+        new_packet = PacketFinalClassificationData(num_cars=3, classification_data=(FinalClassificationData * 22)(*classification_data))
+
+        self.brain._handle_received_final_classification_packet(new_packet)
+        self.assertEqual(patched_update.call_count, 2)
+        self.assertEqual(patched_update.call_args_list[0][0][0], xion)
+        self.assertEqual(patched_update.call_args_list[1][0][0], prolactron)
+        self.assertEqual(str(patched_update.call_args_list[0][0][1]), str(new_packet.classification_data[0]))
+        self.assertEqual(str(patched_update.call_args_list[1][0][1]), str(new_packet.classification_data[1]))
+        patched_create.assert_called_once()
+        self.assertEqual(str(patched_create.call_args[0][0]), str(new_packet.classification_data[2]))

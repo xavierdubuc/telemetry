@@ -59,6 +59,7 @@ class Session:
 
     # data not from packets
     participants: list = None
+    final_classification: list = None
 
     def __eq__(self, other):
         if type(self) != type(other):
