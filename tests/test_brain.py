@@ -194,3 +194,13 @@ class BrainTest(unittest.TestCase):
         self.assertEqual(str(patched_update.call_args_list[1][0][1]), str(new_packet.classification_data[1]))
         patched_create.assert_called_once()
         self.assertEqual(str(patched_create.call_args[0][0]), str(new_packet.classification_data[2]))
+
+    @patch('managers.damage_manager.DamageManager.update')
+    @patch('managers.damage_manager.DamageManager.create')
+    def test__handle_received_damage_packet(self, patched_create, patched_update):
+        pass # TODO (flemme car pareil que les autres en vrai)
+
+    @patch('managers.telemetry_manager.TelemetryManager.update')
+    @patch('managers.telemetry_manager.TelemetryManager.create')
+    def test__handle_received_telemetry_packet(self, patched_create, patched_update):
+        pass # TODO (flemme car pareil que les autres en vrai)

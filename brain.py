@@ -15,9 +15,11 @@ from f1_22_telemetry.packets import (
     PacketLobbyInfoData
 )
 from managers.classification_manager import ClassificationManager
+from managers.damage_manager import DamageManager
 from managers.participant_manager import ParticipantManager
 
 from managers.session_manager import SessionManager
+from managers.telemetry_manager import TelemetryManager
 
 _logger = logging.getLogger(__name__)
 
@@ -39,6 +41,12 @@ class Brain:
 
         elif packet_type == PacketFinalClassificationData:
             self._handle_received_final_classification_packet(packet)
+
+        elif packet_type == PacketCarDamageData:
+            self._handle_received_damage_packet(packet)
+
+        elif packet_type == PacketCarTelemetryData:
+            self._handle_received_telemetry_packet(packet)
 
     def _handle_received_session_packet(self, packet: PacketSessionData):
         tmp_session = SessionManager.create(packet)
@@ -76,6 +84,54 @@ class Brain:
                     if 'network_id' in changes or 'name' in changes:
                         _logger.warning('!? A participant changed !?')
                         _logger.warning(changes)
+
+    def _handle_received_damage_packet(self, packet:PacketCarDamageData):
+        if not self.current_session:
+            return # this should not happen
+        if not self.current_session.participants:
+            return # this should not happen neither
+        amount_of_pertinent_damages = len(self.current_session.participants)
+        if not self.current_session.damages:
+            self.current_session.damages = [
+                DamageManager.create(packet.car_damage_data[i])
+                for i in range(amount_of_pertinent_damages)
+            ]
+        else:
+            current_amount_of_damage = len(self.current_session.damages)
+            for i in range(amount_of_pertinent_damages):
+                packet_data = packet.car_damage_data[i]
+                if i > current_amount_of_damage - 1:
+                    self.current_session.damages.append(DamageManager.create(packet_data))
+                else:
+                    changes = DamageManager.update(self.current_session.damages[i], packet_data)
+                    if changes:
+                        pilot = self.current_session.participants[i].name
+                        _logger.warning(f'{pilot} had a change in damages !')
+                        _logger.warning(changes)
+
+    def _handle_received_telemetry_packet(self, packet:PacketCarTelemetryData):
+        if not self.current_session:
+            return # this should not happen
+        if not self.current_session.participants:
+            return # this should not happen neither
+        amount_of_pertinent_telemetry = len(self.current_session.participants)
+        if not self.current_session.telemetries:
+            self.current_session.telemetries = [
+                TelemetryManager.create(packet.car_telemetry_data[i])
+                for i in range(amount_of_pertinent_telemetry)
+            ]
+        else:
+            current_amount_of_telemetry = len(self.current_session.telemetries)
+            for i in range(amount_of_pertinent_telemetry):
+                packet_data = packet.car_telemetry_data[i]
+                if i > current_amount_of_telemetry - 1:
+                    self.current_session.telemetries.append(TelemetryManager.create(packet_data))
+                else:
+                    changes = TelemetryManager.update(self.current_session.telemetries[i], packet_data)
+                    if changes:
+                        pilot = self.current_session.participants[i].name
+                        _logger.info(f'{pilot} had a change in his telemetry !')
+                        _logger.info(changes)
 
     def _handle_received_final_classification_packet(self, packet:PacketFinalClassificationData):
         if not self.current_session:

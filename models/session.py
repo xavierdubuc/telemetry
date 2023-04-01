@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from models.classification import Classification
+from models.damage import Damage
 from models.enums.session_type import SessionType
 from models.enums.weather import Weather
 from models.enums.track import Track
@@ -9,6 +11,10 @@ from models.enums.game_mode import GameMode
 from models.enums.rule_set import RuleSet
 from models.enums.session_length import SessionLength
 from models.enums.safety_car_status import SafetyCarStatus
+from typing import List
+
+from models.participant import Participant
+from models.telemetry import Telemetry
 
 
 @dataclass
@@ -58,8 +64,10 @@ class Session:
     session_time_elapsed: int = 0
 
     # data not from packets
-    participants: list = None
-    final_classification: list = None
+    participants: List[Participant] = None
+    final_classification: List[Classification] = None
+    damages: List[Damage] = None
+    telemetries: List[Telemetry] = None
 
     def __eq__(self, other):
         if type(self) != type(other):
