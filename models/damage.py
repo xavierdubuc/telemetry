@@ -5,8 +5,8 @@ from typing import List
 @dataclass
 class Damage:
     tyres_wear: List[float] = None
-    tyres_damage: int = None
-    brakes_damage: int = None
+    tyres_damage: List[int] = None
+    brakes_damage: List[int] = None
     front_left_wing_damage: int = None
     front_right_wing_damage: int = None
     rear_wing_damage: int = None

@@ -8,8 +8,6 @@ class DamageManager(AbstractManager):
     model = Damage
 
     primitive_fields = {
-        'tyres_damage': 'tyres_damage',
-        'brakes_damage': 'brakes_damage',
         'front_left_wing_damage': 'front_left_wing_damage',
         'front_right_wing_damage': 'front_right_wing_damage',
         'rear_wing_damage': 'rear_wing_damage',
@@ -42,12 +40,20 @@ class DamageManager(AbstractManager):
         return self
 
     @classmethod
-    def update(cls, damage: Damage, packet: CarDamageData) -> Dict[str, Change]:
+    def update(cls, damage:Damage, packet: CarDamageData) -> Dict[str, Change]:
         changes = super().update(damage, packet)
-        new_value = list(packet.tyres_wear)
-        old_value = damage.tyres_wear
-        if new_value != old_value:
-            changes['tyres_wear']= Change(actual=new_value, old=old_value)
-            damage.tyres_wear = new_value
+
+        # TODO refactor put this logic in parent
+        list_fields = [
+            'tyres_wear'
+            'tyres_damage',
+            'brakes_damage'
+        ]
+        for field in list_fields:
+            new_value = list(getattr(packet, field))
+            old_value = getattr(damage, field)
+            if new_value != old_value:
+                changes[field]= Change(actual=new_value, old=old_value)
+                setattr(damage, field, new_value)
 
         return changes
