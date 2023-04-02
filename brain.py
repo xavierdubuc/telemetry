@@ -132,10 +132,10 @@ class Brain:
                     self.current_session.telemetries.append(TelemetryManager.create(packet_data))
                 else:
                     changes = TelemetryManager.update(self.current_session.telemetries[i], packet_data)
-                    if changes:
-                        pilot = self.current_session.participants[i].name
-                        _logger.info(f'{pilot} had a change in his telemetry !')
-                        _logger.info(changes)
+                    # if changes:
+                        # pilot = self.current_session.participants[i].name
+                        # _logger.info(f'{pilot} had a change in his telemetry !')
+                        # _logger.info(changes)
 
     def _handle_received_final_classification_packet(self, packet:PacketFinalClassificationData):
         if not self.current_session:
