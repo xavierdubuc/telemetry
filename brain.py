@@ -16,6 +16,7 @@ from f1_22_telemetry.packets import (
 )
 from managers.classification_manager import ClassificationManager
 from managers.damage_manager import DamageManager
+from managers.lap_manager import LapManager
 from managers.participant_manager import ParticipantManager
 
 from managers.session_manager import SessionManager
@@ -47,6 +48,9 @@ class Brain:
 
         elif packet_type == PacketCarTelemetryData:
             self._handle_received_telemetry_packet(packet)
+
+        elif packet_type == PacketLapData:
+            self._handle_received_lap_packet(packet)
 
     def _handle_received_session_packet(self, packet: PacketSessionData):
         tmp_session = SessionManager.create(packet)
@@ -153,3 +157,43 @@ class Brain:
                         _logger.warning('!? final classification changed !?')
                         _logger.warning(changes)
 
+    def _handle_received_lap_packet(self, packet:PacketLapData):
+        if not self.current_session:
+            return # this should not happen
+        if not self.current_session.participants:
+            return # this should not happen neither
+        amount_of_pertinent_lap = len(self.current_session.participants)
+        if not self.current_session.laps:
+            self.current_session.laps = [
+                [LapManager.create(packet.lap_data[i], 0)]
+                for i in range(amount_of_pertinent_lap)
+            ]
+        else:
+            current_amount_of_lap = len(self.current_session.laps)
+            for i in range(amount_of_pertinent_lap):
+                packet_data = packet.lap_data[i]
+                if i > current_amount_of_lap - 1:
+                    self.current_session.laps.append([])
+
+                car_laps = self.current_session.laps[i]
+                car_last_lap = car_laps[-1] if car_laps else None
+                if not car_last_lap or car_last_lap.current_lap_num != packet_data.current_lap_num:
+                    car_laps.append(LapManager.create(packet_data, len(car_laps)))
+                else:
+                    car_last_lap.update(packet_data)
+                    changes = LapManager.update(car_last_lap, packet_data)
+
+                if 'car_position' in changes:
+                    change = changes['car_position']
+                    pilot = self.current_session.participants[i].name
+                    delta = change.actual - change.old
+                    if delta == 1:
+                        _logger.warning(f'{pilot} gained a position !')
+                    elif delta > 1:
+                        _logger.warning(f'{pilot} gained {delta} positions !')
+                    elif delta == -1:
+                        _logger.warning(f'{pilot} lost a position !')
+                    elif delta < -1:
+                        _logger.warning(f'{pilot} lost {delta} positions !')
+
+                _logger.info(changes)

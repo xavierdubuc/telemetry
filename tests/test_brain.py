@@ -6,7 +6,11 @@ from f1_22_telemetry.packets import (
     PacketParticipantsData,
     ParticipantData,
     FinalClassificationData,
-    PacketFinalClassificationData
+    PacketFinalClassificationData,
+    PacketCarDamageData,
+    PacketCarTelemetryData,
+    PacketLapData,
+    LapData
 )
 
 from brain import Brain
@@ -19,24 +23,40 @@ from models.enums.tyre_compound import TyreCompound
 from models.participant import Participant
 from models.session import Session
 
+
 class BrainTest(unittest.TestCase):
     maxDiff = None
+
     def setUp(self):
         self.brain = Brain()
 
+    @patch('brain.Brain._handle_received_lap_packet')
+    @patch('brain.Brain._handle_received_telemetry_packet')
+    @patch('brain.Brain._handle_received_damage_packet')
+    @patch('brain.Brain._handle_received_final_classification_packet')
     @patch('brain.Brain._handle_received_participants_packet')
     @patch('brain.Brain._handle_received_session_packet')
-    def test_handle_received_packet(self, patch_session, patch_participant):
-        packet = PacketSessionData()
-        self.brain.handle_received_packet(packet)
-        patch_session.assert_called_once_with(packet)
-        patch_participant.assert_not_called()
+    def test_handle_received_packet(self, patch_session, patch_participant, patch_classification, patch_damage, patch_telemetry, patch_lap):
+        session_packet = PacketSessionData()
+        participant_packet = PacketParticipantsData()
+        classification_packet = PacketFinalClassificationData()
+        damage_packet = PacketCarDamageData()
+        telemetry_packet = PacketCarTelemetryData()
+        lap_packet = PacketLapData()
 
-        patch_session.reset_mock()
-        packet = PacketParticipantsData()
-        self.brain.handle_received_packet(packet)
-        patch_participant.assert_called_once_with(packet)
-        patch_session.assert_not_called()
+        self.brain.handle_received_packet(session_packet)
+        self.brain.handle_received_packet(participant_packet)
+        self.brain.handle_received_packet(classification_packet)
+        self.brain.handle_received_packet(damage_packet)
+        self.brain.handle_received_packet(telemetry_packet)
+        self.brain.handle_received_packet(lap_packet)
+
+        patch_session.assert_called_once_with(session_packet)
+        patch_participant.assert_called_once_with(participant_packet)
+        patch_classification.assert_called_once_with(classification_packet)
+        patch_damage.assert_called_once_with(damage_packet)
+        patch_telemetry.assert_called_once_with(telemetry_packet)
+        patch_lap.assert_called_once_with(lap_packet)
 
     @patch('managers.session_manager.SessionManager.update')
     @patch('managers.session_manager.SessionManager.create')
@@ -123,7 +143,7 @@ class BrainTest(unittest.TestCase):
         new_packet = PacketParticipantsData(num_active_cars=3, participants=(ParticipantData * 22)(*participants_data))
 
         self.brain._handle_received_participants_packet(new_packet)
-        self.assertEqual(patched_update.call_count , 2)
+        self.assertEqual(patched_update.call_count, 2)
         self.assertEqual(patched_update.call_args_list[0][0][0], xion)
         self.assertEqual(patched_update.call_args_list[1][0][0], prolactron)
         self.assertEqual(str(patched_update.call_args_list[0][0][1]), str(new_packet.participants[0]))
@@ -142,20 +162,21 @@ class BrainTest(unittest.TestCase):
                 position=1, num_laps=12, grid_position=2, points=25,
                 num_pit_stops=1, result_status=3, best_lap_time_in_ms=1000, total_race_time=12000,
                 penalties_time=0, num_penalties=0, num_tyre_stints=2,
-                tyre_stints_actual=(ctypes.c_uint8*8)(TyreCompound.c1.value,TyreCompound.c2.value, 0, 0, 0, 0, 0, 0),
-                tyre_stints_visual=(ctypes.c_uint8*8)(Tyre.soft.value,Tyre.medium.value, 0, 0, 0, 0, 0, 0),
-                tyre_stints_end_laps=(ctypes.c_uint8*8)(1,255,0,0,0,0,0,0)
+                tyre_stints_actual=(ctypes.c_uint8*8)(TyreCompound.c1.value, TyreCompound.c2.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_visual=(ctypes.c_uint8*8)(Tyre.soft.value, Tyre.medium.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_end_laps=(ctypes.c_uint8*8)(1, 255, 0, 0, 0, 0, 0, 0)
             ),
             FinalClassificationData(
                 position=2, num_laps=12, grid_position=3, points=18,
                 num_pit_stops=1, result_status=3, best_lap_time_in_ms=2000, total_race_time=14000,
                 penalties_time=0, num_penalties=0, num_tyre_stints=2,
-                tyre_stints_actual=(ctypes.c_uint8*8)(TyreCompound.c1.value,TyreCompound.c2.value, 0, 0, 0, 0, 0, 0),
-                tyre_stints_visual=(ctypes.c_uint8*8)(Tyre.soft.value,Tyre.medium.value, 0, 0, 0, 0, 0, 0),
-                tyre_stints_end_laps=(ctypes.c_uint8*8)(1,255,0,0,0,0,0,0)
+                tyre_stints_actual=(ctypes.c_uint8*8)(TyreCompound.c1.value, TyreCompound.c2.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_visual=(ctypes.c_uint8*8)(Tyre.soft.value, Tyre.medium.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_end_laps=(ctypes.c_uint8*8)(1, 255, 0, 0, 0, 0, 0, 0)
             ),
         ]
-        packet = PacketFinalClassificationData(num_cars=2, classification_data=(FinalClassificationData * 22)(*classification_data))
+        packet = PacketFinalClassificationData(num_cars=2, classification_data=(
+            FinalClassificationData * 22)(*classification_data))
 
         self.brain._handle_received_final_classification_packet(packet)
         patched_create.assert_not_called()
@@ -179,12 +200,13 @@ class BrainTest(unittest.TestCase):
                 position=2, num_laps=12, grid_position=12, points=18,
                 num_pit_stops=1, result_status=3, best_lap_time_in_ms=2000, total_race_time=14000,
                 penalties_time=0, num_penalties=0, num_tyre_stints=2,
-                tyre_stints_actual=(ctypes.c_uint8*8)(TyreCompound.c1.value,TyreCompound.c2.value, 0, 0, 0, 0, 0, 0),
-                tyre_stints_visual=(ctypes.c_uint8*8)(Tyre.soft.value,Tyre.medium.value, 0, 0, 0, 0, 0, 0),
-                tyre_stints_end_laps=(ctypes.c_uint8*8)(1,255,0,0,0,0,0,0)
+                tyre_stints_actual=(ctypes.c_uint8*8)(TyreCompound.c1.value, TyreCompound.c2.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_visual=(ctypes.c_uint8*8)(Tyre.soft.value, Tyre.medium.value, 0, 0, 0, 0, 0, 0),
+                tyre_stints_end_laps=(ctypes.c_uint8*8)(1, 255, 0, 0, 0, 0, 0, 0)
             ),
         )
-        new_packet = PacketFinalClassificationData(num_cars=3, classification_data=(FinalClassificationData * 22)(*classification_data))
+        new_packet = PacketFinalClassificationData(num_cars=3, classification_data=(
+            FinalClassificationData * 22)(*classification_data))
 
         self.brain._handle_received_final_classification_packet(new_packet)
         self.assertEqual(patched_update.call_count, 2)
@@ -198,9 +220,40 @@ class BrainTest(unittest.TestCase):
     @patch('managers.damage_manager.DamageManager.update')
     @patch('managers.damage_manager.DamageManager.create')
     def test__handle_received_damage_packet(self, patched_create, patched_update):
-        pass # TODO (flemme car pareil que les autres en vrai)
+        pass  # TODO (flemme car pareil que les autres en vrai)
 
     @patch('managers.telemetry_manager.TelemetryManager.update')
     @patch('managers.telemetry_manager.TelemetryManager.create')
     def test__handle_received_telemetry_packet(self, patched_create, patched_update):
-        pass # TODO (flemme car pareil que les autres en vrai)
+        pass  # TODO (flemme car pareil que les autres en vrai)
+
+    @patch('managers.lap_manager.LapManager.update')
+    @patch('managers.lap_manager.LapManager.create')
+    def _test__handle_received_lap_packet_no_part(self, patched_create, patched_update):
+        packet = PacketLapData(lap_data=[])
+        self.brain._handle_received_lap_packet(packet)
+        patched_create.assert_not_called()
+        patched_update.assert_not_called()
+
+        self.brain.current_session = Session()
+        self.brain._handle_received_lap_packet(packet)
+        patched_create.assert_not_called()
+        patched_update.assert_not_called()
+
+        self.brain.current_session.participants = []
+        self.brain._handle_received_lap_packet(packet)
+        patched_create.assert_not_called()
+        patched_update.assert_not_called()
+
+    @patch('managers.lap_manager.LapManager.update')
+    @patch('managers.lap_manager.LapManager.create')
+    def _test__handle_received_lap_packet_no_lap_yet(self, patched_create, patched_update):
+        self.brain.current_session = Session()
+        self.brain.current_session.participants = [
+            Participant(name="Xion"), Participant(name="DimDim")
+        ]
+        packet = PacketLapData(lap_data=(LapData * 22)(
+            LapData(current_lap_num=1), LapData(current_lap_num=1)
+        ))
+        self.brain._handle_received_lap_packet(packet)
+        

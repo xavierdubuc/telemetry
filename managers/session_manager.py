@@ -1,3 +1,4 @@
+from typing import Dict
 from models.enums.formula_type import FormulaType
 from models.enums.game_mode import GameMode
 from models.enums.gearbox import Gearbox
@@ -85,7 +86,7 @@ class SessionManager(AbstractManager):
         return self
 
     @classmethod
-    def update(cls, session: Session, packet: PacketSessionData) -> dict:
+    def update(cls, session: Session, packet: PacketSessionData) -> Dict[str, Change]:
         changes = super().update(session, packet)
 
         # computing time_elapsed field

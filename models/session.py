@@ -12,6 +12,7 @@ from models.enums.rule_set import RuleSet
 from models.enums.session_length import SessionLength
 from models.enums.safety_car_status import SafetyCarStatus
 from typing import List
+from models.lap import Lap
 
 from models.participant import Participant
 from models.telemetry import Telemetry
@@ -68,6 +69,7 @@ class Session:
     final_classification: List[Classification] = None
     damages: List[Damage] = None
     telemetries: List[Telemetry] = None
+    laps: List[List[Lap]] = None
 
     def __eq__(self, other):
         if type(self) != type(other):

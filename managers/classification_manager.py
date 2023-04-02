@@ -1,3 +1,4 @@
+from typing import Dict
 from managers.abstract_manager import Change, AbstractManager
 from models.classification import Classification
 from models.enums.result_status import ResultStatus
@@ -40,7 +41,7 @@ class ClassificationManager(AbstractManager):
         return self
 
     @classmethod
-    def update(cls, classification: Classification, packet: FinalClassificationData) -> dict:
+    def update(cls, classification: Classification, packet: FinalClassificationData) -> Dict[str, Change]:
         changes = super().update(classification, packet)
 
         # tyre_stints_actual

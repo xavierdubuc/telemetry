@@ -1,3 +1,4 @@
+from typing import Dict
 from managers.abstract_manager import AbstractManager, Change
 from models.telemetry import Telemetry
 from f1_22_telemetry.packets import CarTelemetryData
@@ -40,7 +41,7 @@ class TelemetryManager(AbstractManager):
         return self
 
     @classmethod
-    def update(cls, telemetry:Telemetry, packet: CarTelemetryData) -> dict:
+    def update(cls, telemetry:Telemetry, packet: CarTelemetryData) -> Dict[str, Change]:
         changes = super().update(telemetry, packet)
 
         list_fields = [

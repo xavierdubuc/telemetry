@@ -1,3 +1,4 @@
+from typing import Dict
 from models.session import Session
 from f1_22_telemetry.packets import Packet
 from datetime import timedelta
@@ -45,7 +46,7 @@ class AbstractManager:
         return self
 
     @classmethod
-    def update(cls, model, packet: Packet) -> dict:
+    def update(cls, model, packet: Packet) -> Dict[str, Change]:
         changes = {}
         for field, packet_field in cls.primitive_fields.items():
             curr_value = getattr(model, field)
