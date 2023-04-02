@@ -195,4 +195,4 @@ class Brain:
                     elif delta < -1:
                         _logger.warning(f'{pilot} lost {delta} positions !')
 
-                _logger.info(changes)
+                #_logger.info(changes)
