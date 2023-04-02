@@ -180,7 +180,6 @@ class Brain:
                 if not car_last_lap or car_last_lap.current_lap_num != packet_data.current_lap_num:
                     car_laps.append(LapManager.create(packet_data, len(car_laps)))
                 else:
-                    car_last_lap.update(packet_data)
                     changes = LapManager.update(car_last_lap, packet_data)
 
                 if 'car_position' in changes:
