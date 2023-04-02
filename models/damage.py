@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
 class Damage:
-    tyres_wear: float = None
+    tyres_wear: List[float] = None
     tyres_damage: int = None
     brakes_damage: int = None
     front_left_wing_damage: int = None

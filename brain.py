@@ -108,10 +108,10 @@ class Brain:
                     self.current_session.damages.append(DamageManager.create(packet_data))
                 else:
                     changes = DamageManager.update(self.current_session.damages[i], packet_data)
-                    if changes:
-                        pilot = self.current_session.participants[i].name
-                        _logger.warning(f'{pilot} had a change in damages !')
-                        _logger.warning(changes)
+                    # if changes:
+                    #     pilot = self.current_session.participants[i].name
+                    #     _logger.warning(f'{pilot} had a change in damages !')
+                    #     _logger.warning(changes)
 
     def _handle_received_telemetry_packet(self, packet:PacketCarTelemetryData):
         if not self.current_session:
