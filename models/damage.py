@@ -3,24 +3,24 @@ from dataclasses import dataclass
 
 @dataclass
 class Damage:
-    tyres_wear: float
-    tyres_damage: int
-    brakes_damage: int
-    front_left_wing_damage: int
-    front_right_wing_damage: int
-    rear_wing_damage: int
-    floor_damage: int
-    diffuser_damage: int
-    sidepod_damage: int
-    drs_fault: bool
-    ers_fault: bool
-    gearbox_damage: int
-    engined_damage: int
-    engine_mguh_wear: int
-    engine_energy_store_qear: int
-    engine_control_electronics_wear: int
-    engine_internal_combustion_engine_wear: int
-    engine_mguk_wear: int
-    engine_traction_control_wear: int
-    engine_blown: bool
-    engine_seized: bool
+    tyres_wear: float = None
+    tyres_damage: int = None
+    brakes_damage: int = None
+    front_left_wing_damage: int = None
+    front_right_wing_damage: int = None
+    rear_wing_damage: int = None
+    floor_damage: int = None
+    diffuser_damage: int = None
+    sidepod_damage: int = None
+    drs_fault: bool = None
+    ers_fault: bool = None
+    gearbox_damage: int = None
+    engined_damage: int = None
+    engine_mguh_wear: int = None
+    engine_energy_store_qear: int = None
+    engine_control_electronics_wear: int = None
+    engine_internal_combustion_engine_wear: int = None
+    engine_mguk_wear: int = None
+    engine_traction_control_wear: int = None
+    engine_blown: bool = None
+    engine_seized: bool = None
