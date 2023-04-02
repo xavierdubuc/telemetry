@@ -45,7 +45,7 @@ class DamageManager(AbstractManager):
 
         # TODO refactor put this logic in parent
         list_fields = [
-            'tyres_wear'
+            'tyres_wear',
             'tyres_damage',
             'brakes_damage'
         ]
