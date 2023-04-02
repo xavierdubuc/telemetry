@@ -25,7 +25,8 @@ def run_telemetry(ip:str, bot:commands.InteractionBot):
             brain.handle_received_packet(packet)
             if brain.current_session and brain.current_session.participants:
                 for participant in brain.current_session.participants:
-                    print(participant.race_number, participant.name, participant.telemetry_is_public)
+                    if not participant.telemetry_is_public:
+                        print(f'{participant.race_number} {participant.name} does not have public telemetry !')
             i += 1
     except KeyboardInterrupt:
         _logger.info('Stopping telemetry...')
