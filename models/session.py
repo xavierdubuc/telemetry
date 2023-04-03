@@ -115,7 +115,7 @@ class Session:
                 row[2] = self._format_time(row[2])
             row[4] = self._format_time(row[4])
 
-        data = sorted(data, lambda x: x[0])
+        data = sorted(data, key=lambda x: x[0])
         return data
 
     def _format_time(self, obj, with_hour=False):
