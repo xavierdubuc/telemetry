@@ -118,12 +118,9 @@ class Session:
         data = sorted(data, lambda x: x[0])
         return data
 
-
-    def _format_time(self, seconds=0, milliseconds=0, with_hour=False):
-        if milliseconds:
-            seconds = milliseconds/1000
-        if seconds > 60:
-            no_tail = str(timedelta(seconds=seconds))[:-3]
+    def _format_time(self, obj, with_hour=False):
+        if obj.seconds > 60:
+            no_tail = str(obj)[:-3]
             return no_tail if with_hour else no_tail[2:]
         else:
-            return f'{seconds}s'
+            return f'{obj.seconds}s'
