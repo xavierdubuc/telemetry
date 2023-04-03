@@ -187,12 +187,12 @@ class Brain:
                         pilot = self.current_session.participants[i].name
                         delta = change.actual - change.old
                         if delta == 1:
-                            _logger.warning(f'{pilot} gained a position ({change.old} -> {change.actual}) !')
-                        elif delta > 1:
-                            _logger.warning(f'{pilot} gained {delta} positions ({change.old} -> {change.actual}) !')
-                        elif delta == -1:
                             _logger.warning(f'{pilot} lost a position ({change.old} -> {change.actual}) !')
-                        elif delta < -1:
+                        elif delta > 1:
                             _logger.warning(f'{pilot} lost {delta} positions ({change.old} -> {change.actual}) !')
+                        elif delta == -1:
+                            _logger.warning(f'{pilot} gained a position ({change.old} -> {change.actual}) !')
+                        elif delta < -1:
+                            _logger.warning(f'{pilot} gained {-delta} positions ({change.old} -> {change.actual}) !')
 
                 #_logger.info(changes)

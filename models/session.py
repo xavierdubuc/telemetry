@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+from datetime import timedelta
 from models.classification import Classification
 from models.damage import Damage
 from models.enums.session_type import SessionType
+from models.enums.tyre import Tyre
 from models.enums.weather import Weather
 from models.enums.track import Track
 from models.enums.formula_type import FormulaType
@@ -83,3 +85,45 @@ class Session:
         if self.session_length != other.session_length:
             return False
         return True
+
+    def final_ranking_to_csv(self):
+        tyres = {
+            Tyre.soft: 'S',
+            Tyre.medium: 'M',
+            Tyre.hard: 'H',
+            Tyre.inter : 'I',
+            Tyre.wet: 'W'
+        }
+        data = []
+        first_race_time = None
+        best_lap = None
+        for participant, classification in zip(self.participants, self.final_classification):
+            current_tyres = ''.join([tyres[t]for t in classification.tyre_stints_visual])
+            race_time = timedelta(seconds=classification.total_race_time/1000)
+            best_lap_time = timedelta(seconds=classification.best_lap_time_in_ms/1000)
+            if classification.position == 1:
+                first_race_time = race_time
+            row = [
+                classification.position, participant.name, race_time, current_tyres, best_lap_time
+            ]
+            data.append(row)
+
+        for row in data:
+            if row[0] != 1:
+                row[2] = self._format_time(row[2] - first_race_time)
+            else:
+                row[2] = self._format_time(row[2])
+            row[4] = self._format_time(row[2])
+
+        data = sorted(data, lambda x: x[0])
+        return data
+
+
+    def _format_time(self, seconds=0, milliseconds=0, with_hour=False):
+        if milliseconds:
+            seconds = milliseconds/1000
+        if seconds > 60:
+            no_tail = str(timedelta(seconds=seconds))[:-3]
+            return no_tail if with_hour else no_tail[2:]
+        else:
+            return f'{seconds}s'
