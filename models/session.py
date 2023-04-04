@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 from datetime import timedelta
+
+import pandas
 from models.classification import Classification
 from models.damage import Damage
+from models.enums.result_status import ResultStatus
 from models.enums.session_type import SessionType
 from models.enums.tyre import Tyre
 from models.enums.weather import Weather
@@ -87,22 +90,21 @@ class Session:
         return True
 
     def final_ranking_to_csv(self):
-        tyres = {
-            Tyre.soft: 'S',
-            Tyre.medium: 'M',
-            Tyre.hard: 'H',
-            Tyre.inter : 'I',
-            Tyre.wet: 'W'
-        }
         data = []
         first_race_time = None
-        best_lap = None
         for participant, classification in zip(self.participants, self.final_classification):
-            current_tyres = ''.join([tyres[t]for t in classification.tyre_stints_visual])
-            race_time = timedelta(seconds=classification.total_race_time/1000)
-            best_lap_time = timedelta(seconds=classification.best_lap_time_in_ms/1000)
+            current_tyres = ''.join([str(t) for t in classification.tyre_stints_visual])
+
+            if classification.result_status in (ResultStatus.retired, ResultStatus.dnf, ResultStatus.not_classified):
+                race_time = 'NT'
+            elif classification.result_status == ResultStatus.dsq:
+                race_time = 'DSQ'
+            else:
+                race_time = timedelta(seconds=classification.total_race_time)
             if classification.position == 1:
                 first_race_time = race_time
+
+            best_lap_time = self._format_time(timedelta(seconds=classification.best_lap_time_in_ms/1000))
             row = [
                 classification.position, participant.name, race_time, current_tyres, best_lap_time
             ]
@@ -110,17 +112,16 @@ class Session:
 
         for row in data:
             if row[0] != 1:
-                row[2] = self._format_time(row[2] - first_race_time)
+                if type(row[2]) != str:
+                    row[2] = self._format_time(row[2] - first_race_time)
             else:
                 row[2] = self._format_time(row[2])
-            row[4] = self._format_time(row[4])
 
         data.sort(key=lambda x: x[0])
+        data = pandas.DataFrame(data)
         return data
 
-    def _format_time(self, obj, with_hour=False):
-        if obj.seconds > 60:
-            no_tail = str(obj)[:-3]
-            return no_tail if with_hour else no_tail[2:]
-        else:
-            return f'{obj.seconds}s'
+    def _format_time(self, obj):
+        minutes = obj.seconds//60
+        minutes_str = f'{obj.seconds//60}:' if minutes > 0 else ''
+        return f'{minutes_str}{obj.seconds%60}.{str(obj.microseconds//1000).zfill(3)}'

@@ -15,3 +15,16 @@ class Tyre(Enum):
     f2_soft = 20
     f2_medium = 21
     f2_hard = 22
+
+    def __str__(self):
+        if self == Tyre.soft:
+            return 'S'
+        if self == Tyre.medium:
+            return 'M'
+        if self == Tyre.hard:
+            return 'H'
+        if self == Tyre.inter:
+            return 'I'
+        if self == Tyre.wet:
+            return 'W'
+        return self.name
